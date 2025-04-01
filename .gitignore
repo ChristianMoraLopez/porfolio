@@ -1,0 +1,42 @@
+# Node modules
+node_modules/
+
+# Logs
+logs
+*.log
+*.log.*
+
+# Dependencias de NPM
+package-lock.json
+yarn.lock
+
+# Archivos de entorno
+.env
+.env.* 
+
+# Directorios y archivos de configuración específicos de editores
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Archivos de sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos de caché
+.cache/
+
+# Archivos de construcción
+dist/
+build/
+tmp/
+
+# Archivos de prueba
+coverage/
+*.seed
+*.tsbuildinfo
+
+# Archivos de Docker
+.docker/
+docker-compose.override.yml
