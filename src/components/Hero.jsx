@@ -89,12 +89,7 @@ const Hero = () => {
         </div>
       </div>
 
-     
-      
       <div className="container mx-auto px-4 text-center relative z-10">
-      <h1 className="hero-title text-4xl sm:text-6xl md:text-8xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-            Christian Mora
-          </h1>
         <div className="flex flex-col items-center space-y-4">
           <animated.div style={logoSpring}>
             <AnimatedLogo 
@@ -103,8 +98,6 @@ const Hero = () => {
               animate={true}
             />
           </animated.div>
-
-          
           
           {/* Scroll Indicator */}
           <AnimatePresence>
@@ -144,8 +137,6 @@ const Hero = () => {
               </motion.div>
             )}
           </AnimatePresence>
-          
-         
           
           <animated.p style={subtitleSpring} className="text-lg sm:text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-2xl px-4">
             Desarrollador de Software / Analista de Datos
