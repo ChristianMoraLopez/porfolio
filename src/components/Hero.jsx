@@ -83,7 +83,7 @@ const Hero = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-white via-blue-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="absolute inset-0 flex items-start justify-center">
-          <h1 className="text-[35vw] font-bold text-gray-100 dark:text-gray-800 opacity-50 select-none tracking-wider">
+          <h1 className="text-[35vw] font-bold text-blue-100 dark:text-blue-900 opacity-50 select-none tracking-wider">
             Christian Mora
           </h1>
         </div>
