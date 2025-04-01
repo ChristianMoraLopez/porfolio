@@ -1,69 +1,179 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-scroll';
 import { FaGithub, FaLinkedin, FaArrowDown } from 'react-icons/fa';
+import { motion } from 'framer-motion';
+import { useSpring, animated } from '@react-spring/web';
+import gsap from 'gsap';
 import logo from '../assets/logo.svg';
 
 const Hero = () => {
+  // GSAP Animation
+  useEffect(() => {
+    gsap.from('.hero-title', {
+      duration: 1.5,
+      y: 100,
+      opacity: 0,
+      ease: 'power4.out',
+      delay: 0.5,
+    });
+  }, []);
+
+  // React Spring Animations
+  const logoSpring = useSpring({
+    from: { transform: 'scale(0)' },
+    to: { transform: 'scale(1)' },
+    config: { tension: 200, friction: 12 },
+  });
+
+  const subtitleSpring = useSpring({
+    from: { opacity: 0, transform: 'translateY(20px)' },
+    to: { opacity: 1, transform: 'translateY(0)' },
+    delay: 1000,
+  });
+
+  // Framer Motion Variants
+  const socialVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 1.5,
+      },
+    },
+  };
+
+  const buttonVariants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        duration: 0.5,
+        delay: 2,
+      },
+    },
+    hover: {
+      scale: 1.05,
+      transition: {
+        duration: 0.2,
+        yoyo: Infinity,
+      },
+    },
+  };
+
   return (
-    <section id="hero" className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-blue-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white via-blue-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+        <motion.div
+          className="absolute inset-0"
+          animate={{
+            backgroundPosition: ['0% 0%', '100% 100%'],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            repeatType: 'reverse',
+          }}
+          style={{
+            backgroundImage: 'radial-gradient(circle at center, rgba(37, 99, 235, 0.1) 0%, transparent 50%)',
+            backgroundSize: '100% 100%',
+          }}
+        />
+      </div>
       
       <div className="container mx-auto px-4 text-center relative z-10">
         <div className="flex flex-col items-center">
-          <img src={logo} alt="Logo" className="w-24 h-24 mb-8 animate-float" />
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+          <animated.img
+            style={logoSpring}
+            src={logo}
+            alt="Logo"
+            className="w-32 h-32 mb-8"
+          />
+          
+          <h1 className="hero-title text-6xl md:text-8xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
             Christian Mora
           </h1>
-          <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl">
+          
+          <animated.p style={subtitleSpring} className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-12 max-w-2xl">
             Desarrollador de Software / Analista de Datos
-          </p>
+          </animated.p>
           
-          <div className="flex justify-center space-x-6 mb-12">
-            <a
-              href="https://github.com/ChristianMoraLopez"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-600 dark:text-gray-300 hover:text-primary transition-transform hover:scale-110"
-            >
-              <FaGithub className="text-4xl" />
-            </a>
-            <a
-              href="https://www.linkedin.com/in/christian-mora-lopez/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-600 dark:text-gray-300 hover:text-primary transition-transform hover:scale-110"
-            >
-              <FaLinkedin className="text-4xl" />
-            </a>
-          </div>
+          <motion.div
+            variants={socialVariants}
+            initial="hidden"
+            animate="visible"
+            className="flex justify-center space-x-8 mb-12"
+          >
+            {[
+              { icon: FaGithub, href: 'https://github.com/ChristianMoraLopez' },
+              { icon: FaLinkedin, href: 'https://www.linkedin.com/in/christian-mora-lopez/' },
+            ].map((social, index) => (
+              <motion.a
+                key={index}
+                variants={socialVariants}
+                whileHover={{ scale: 1.2, rotate: 5 }}
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-600 dark:text-gray-300 hover:text-primary"
+              >
+                <social.icon className="text-5xl" />
+              </motion.a>
+            ))}
+          </motion.div>
           
-          <div className="space-x-4">
-            <Link
-              to="projects"
-              smooth={true}
-              duration={500}
-              className="inline-block bg-primary text-white px-8 py-3 rounded-lg hover:bg-secondary transition-all hover:scale-105 transform cursor-pointer shadow-lg hover:shadow-xl"
-            >
-              Ver Proyectos
-            </Link>
-            <Link
-              to="contact"
-              smooth={true}
-              duration={500}
-              className="inline-block border-2 border-primary text-primary px-8 py-3 rounded-lg hover:bg-primary hover:text-white transition-all hover:scale-105 transform cursor-pointer shadow-lg hover:shadow-xl"
-            >
-              Contactar
-            </Link>
+          <div className="space-x-6">
+            {[
+              { text: 'Ver Proyectos', to: 'projects', primary: true },
+              { text: 'Contactar', to: 'contact', primary: false },
+            ].map((button, index) => (
+              <motion.div
+                key={index}
+                variants={buttonVariants}
+                initial="hidden"
+                animate="visible"
+                whileHover="hover"
+                className="inline-block"
+              >
+                <Link
+                  to={button.to}
+                  smooth={true}
+                  duration={500}
+                  className={`
+                    px-8 py-4 rounded-lg transform transition-all
+                    ${button.primary
+                      ? 'bg-primary text-white hover:bg-secondary'
+                      : 'border-2 border-primary text-primary hover:bg-primary hover:text-white'
+                    }
+                    shadow-lg hover:shadow-xl
+                  `}
+                >
+                  {button.text}
+                </Link>
+              </motion.div>
+            ))}
           </div>
         </div>
         
-        {/* Scroll Down Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <motion.div
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+          animate={{
+            y: [0, 10, 0],
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        >
           <Link to="about" smooth={true} duration={500} className="cursor-pointer">
-            <FaArrowDown className="text-2xl text-primary" />
+            <FaArrowDown className="text-3xl text-primary" />
           </Link>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
