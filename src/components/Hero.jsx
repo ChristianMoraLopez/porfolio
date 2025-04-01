@@ -4,7 +4,7 @@ import { FaGithub, FaLinkedin, FaArrowDown } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { useSpring, animated } from '@react-spring/web';
 import gsap from 'gsap';
-import logo from '../assets/logo.svg';
+import AnimatedLogo from './AnimatedLogo';
 
 const Hero = () => {
   // GSAP Animation
@@ -64,7 +64,7 @@ const Hero = () => {
   };
 
   return (
-    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 pb-20">
       {/* Animated Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-white via-blue-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
@@ -86,19 +86,20 @@ const Hero = () => {
       </div>
       
       <div className="container mx-auto px-4 text-center relative z-10">
-        <div className="flex flex-col items-center">
-          <animated.img
-            style={logoSpring}
-            src={logo}
-            alt="Logo"
-            className="w-32 h-32 mb-8"
-          />
+        <div className="flex flex-col items-center space-y-8">
+          <animated.div style={logoSpring}>
+            <AnimatedLogo 
+              variant="blue"
+              className="w-40 h-40"
+              animate={true}
+            />
+          </animated.div>
           
-          <h1 className="hero-title text-6xl md:text-8xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+          <h1 className="hero-title text-6xl md:text-8xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
             Christian Mora
           </h1>
           
-          <animated.p style={subtitleSpring} className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-12 max-w-2xl">
+          <animated.p style={subtitleSpring} className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-2xl">
             Desarrollador de Software / Analista de Datos
           </animated.p>
           
@@ -106,7 +107,7 @@ const Hero = () => {
             variants={socialVariants}
             initial="hidden"
             animate="visible"
-            className="flex justify-center space-x-8 mb-12"
+            className="flex justify-center space-x-8"
           >
             {[
               { icon: FaGithub, href: 'https://github.com/ChristianMoraLopez' },
@@ -126,7 +127,7 @@ const Hero = () => {
             ))}
           </motion.div>
           
-          <div className="space-x-6">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
             {[
               { text: 'Ver Proyectos', to: 'projects', primary: true },
               { text: 'Contactar', to: 'contact', primary: false },
