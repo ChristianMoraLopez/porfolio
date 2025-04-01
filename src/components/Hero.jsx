@@ -23,12 +23,12 @@ const Hero = () => {
   // Scroll Detection
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 50) {
+      if (window.scrollY > 0) {
         setShowScrollIndicator(false);
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -79,28 +79,23 @@ const Hero = () => {
 
   return (
     <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 pb-32">
-      {/* Animated Background */}
+      {/* Background with Text Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-white via-blue-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-        <motion.div
-          className="absolute inset-0"
-          animate={{
-            backgroundPosition: ['0% 0%', '100% 100%'],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            repeatType: 'reverse',
-          }}
-          style={{
-            backgroundImage: 'radial-gradient(circle at center, rgba(37, 99, 235, 0.1) 0%, transparent 50%)',
-            backgroundSize: '100% 100%',
-          }}
-        />
+        <div className="absolute inset-0 flex items-start justify-center">
+          <h1 className="text-[35vw] font-bold text-gray-100 dark:text-gray-800 opacity-50 select-none tracking-wider">
+            Christian Mora
+          </h1>
+        </div>
       </div>
+
+     
       
       <div className="container mx-auto px-4 text-center relative z-10">
-        <div className="flex flex-col items-center space-y-8">
+      <h1 className="hero-title text-4xl sm:text-6xl md:text-8xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+            Christian Mora
+          </h1>
+        <div className="flex flex-col items-center space-y-4">
           <animated.div style={logoSpring}>
             <AnimatedLogo 
               variant="blue"
@@ -108,10 +103,49 @@ const Hero = () => {
               animate={true}
             />
           </animated.div>
+
           
-          <h1 className="hero-title text-4xl sm:text-6xl md:text-8xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-            Christian Mora
-          </h1>
+          
+          {/* Scroll Indicator */}
+          <AnimatePresence>
+            {showScrollIndicator && (
+              <motion.div 
+                className="flex flex-col items-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.1 }}
+              >
+                <motion.div
+                  className="w-6 h-10 border-2 border-primary rounded-full p-1"
+                  initial={{ opacity: 0.5 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ repeat: Infinity, duration: 1.5 }}
+                >
+                  <motion.div
+                    className="w-1.5 h-1.5 bg-primary rounded-full mx-auto"
+                    animate={{
+                      y: [0, 12, 0],
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  />
+                </motion.div>
+                <motion.p 
+                  className="text-sm text-gray-600 dark:text-gray-400 mt-2"
+                  animate={{ opacity: [0.5, 1, 0.5] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  Scroll
+                </motion.p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          
+         
           
           <animated.p style={subtitleSpring} className="text-lg sm:text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-2xl px-4">
             Desarrollador de Software / Analista de Datos
@@ -208,45 +242,6 @@ const Hero = () => {
         >
           <FaWhatsapp className="text-3xl" />
         </motion.a>
-
-        {/* Scroll Indicator */}
-        <AnimatePresence>
-          {showScrollIndicator && (
-            <motion.div 
-              className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <motion.div
-                className="w-6 h-10 border-2 border-primary rounded-full p-1"
-                initial={{ opacity: 0.5 }}
-                animate={{ opacity: 1 }}
-                transition={{ repeat: Infinity, duration: 1.5 }}
-              >
-                <motion.div
-                  className="w-1.5 h-1.5 bg-primary rounded-full mx-auto"
-                  animate={{
-                    y: [0, 12, 0],
-                  }}
-                  transition={{
-                    duration: 1.5,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                />
-              </motion.div>
-              <motion.p 
-                className="text-sm text-gray-600 dark:text-gray-400 mt-2"
-                animate={{ opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                Scroll
-              </motion.p>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
     </section>
   );
