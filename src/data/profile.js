@@ -6,7 +6,7 @@ export const profile = {
   email: 'christianmoralopez@hotmail.com',
   whatsapp: 'https://wa.link/rc84s3',
   github: 'https://github.com/ChristianMoraLopez',
-  linkedin: 'https://www.linkedin.com/in/christian-mora-lopez/',
+  linkedin: 'https://www.linkedin.com/in/christian-moral/',
   coffee: 'https://buymeacoffee.com/christianmora',
   languages: 'Español nativo · Inglés intermedio-avanzado',
   // Frases que rotan en el hero con efecto "scramble".
