@@ -1,241 +1,239 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-scroll';
-import { FaGithub, FaLinkedin, FaWhatsapp } from 'react-icons/fa';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useSpring, animated } from '@react-spring/web';
-import gsap from 'gsap';
-import AnimatedLogo from './AnimatedLogo';
+import { useEffect, useRef } from 'react'
+import { motion, useMotionValue, useScroll, useSpring, useTransform } from 'motion/react'
+import { FiArrowDown, FiArrowUpRight, FiGithub, FiLinkedin, FiMapPin } from 'react-icons/fi'
+import {
+  SiDocker,
+  SiDuckdb,
+  SiKotlin,
+  SiNextdotjs,
+  SiOllama,
+  SiPostgresql,
+  SiPython,
+  SiReact,
+  SiRust,
+  SiSupabase,
+  SiTauri,
+  SiTypescript,
+} from 'react-icons/si'
+import Logo from './ui/Logo'
+import Magnetic from './ui/Magnetic'
+import ShaderBackground from './ui/ShaderBackground'
+import { useScrollTo } from './providers/SmoothScroll'
+import { gsap, SplitText, useGSAP, prefersReducedMotion } from '../lib/gsap'
+import { profile } from '../data/profile'
 
-const Hero = () => {
-  const [showScrollIndicator, setShowScrollIndicator] = useState(true);
+const orbits = [
+  { radius: 24, duration: 26, icons: [SiReact, SiTypescript, SiNextdotjs] },
+  { radius: 36, duration: 40, reverse: true, icons: [SiPython, SiRust, SiSupabase, SiDuckdb] },
+  { radius: 47, duration: 58, icons: [SiTauri, SiPostgresql, SiOllama, SiDocker, SiKotlin] },
+]
 
-  // GSAP Animation
+// Sistema "planetario": el logo es el sol y las tecnologías orbitan alrededor.
+function OrbitSystem() {
+  const mx = useMotionValue(0)
+  const my = useMotionValue(0)
+  const x = useSpring(mx, { stiffness: 60, damping: 18 })
+  const y = useSpring(my, { stiffness: 60, damping: 18 })
+  const { scrollY } = useScroll()
+  const spin = useTransform(scrollY, [0, 900], [0, 140])
+  const scale = useTransform(scrollY, [0, 900], [1, 0.75])
+
   useEffect(() => {
-    gsap.from('.hero-title', {
-      duration: 1.5,
-      y: 100,
-      opacity: 0,
-      ease: 'power4.out',
-      delay: 0.5,
-    });
-  }, []);
-
-  // Scroll Detection
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 0) {
-        setShowScrollIndicator(false);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // React Spring Animations
-  const logoSpring = useSpring({
-    from: { transform: 'scale(0)' },
-    to: { transform: 'scale(1)' },
-    config: { tension: 200, friction: 12 },
-  });
-
-  const subtitleSpring = useSpring({
-    from: { opacity: 0, transform: 'translateY(20px)' },
-    to: { opacity: 1, transform: 'translateY(0)' },
-    delay: 1000,
-  });
-
-  // Framer Motion Variants
-  const socialVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 1.5,
-      },
-    },
-  };
-
-  const buttonVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: {
-        duration: 0.5,
-        delay: 2,
-      },
-    },
-    hover: {
-      scale: 1.05,
-      transition: {
-        duration: 0.2,
-        yoyo: Infinity,
-      },
-    },
-  };
+    const onMove = (e) => {
+      mx.set((e.clientX / innerWidth - 0.5) * -36)
+      my.set((e.clientY / innerHeight - 0.5) * -36)
+    }
+    window.addEventListener('pointermove', onMove, { passive: true })
+    return () => window.removeEventListener('pointermove', onMove)
+  }, [mx, my])
 
   return (
-    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 pb-32">
-      {/* Background with Text Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white via-blue-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-        <div className="absolute inset-0 flex items-start justify-center pt-16">
-          <h1 className="text-[8vw] font-bold text-blue-100 dark:text-blue-900 opacity-50 select-none tracking-wider">
-            Christian Mora
-          </h1>
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 text-center relative z-10">
-        <div className="flex flex-col items-center space-y-4">
-          <animated.div style={logoSpring}>
-            <AnimatedLogo 
-              variant="blue"
-              className="w-32 h-32 sm:w-40 sm:h-40"
-              animate={true}
-            />
-          </animated.div>
-          
-          {/* Scroll Indicator */}
-          <AnimatePresence>
-            {showScrollIndicator && (
-              <motion.div 
-                className="flex flex-col items-center"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.1 }}
-              >
-                <motion.div
-                  className="w-6 h-10 border-2 border-primary rounded-full p-1"
-                  initial={{ opacity: 0.5 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ repeat: Infinity, duration: 1.5 }}
-                >
-                  <motion.div
-                    className="w-1.5 h-1.5 bg-primary rounded-full mx-auto"
-                    animate={{
-                      y: [0, 12, 0],
-                    }}
-                    transition={{
-                      duration: 1.5,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                  />
-                </motion.div>
-                <motion.p 
-                  className="text-sm text-gray-600 dark:text-gray-400 mt-2"
-                  animate={{ opacity: [0.5, 1, 0.5] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  Scroll
-                </motion.p>
-              </motion.div>
-            )}
-          </AnimatePresence>
-          
-          <animated.p style={subtitleSpring} className="text-lg sm:text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-2xl px-4">
-            Desarrollador de Software / Analista de Datos
-          </animated.p>
-          
-          <motion.div
-            variants={socialVariants}
-            initial="hidden"
-            animate="visible"
-            className="flex justify-center space-x-8"
+    <motion.div
+      style={{ x, y, scale }}
+      className="hero-orbit relative aspect-square w-full max-w-[560px]"
+    >
+      {orbits.map((o, i) => (
+        <div
+          key={i}
+          className="absolute top-1/2 left-1/2 rounded-full border border-dashed border-line-strong"
+          style={{ width: `${o.radius * 2}%`, height: `${o.radius * 2}%`, translate: '-50% -50%' }}
+        >
+          <div
+            className="absolute inset-0 animate-spin"
+            style={{ animationDuration: `${o.duration}s`, animationDirection: o.reverse ? 'reverse' : 'normal' }}
           >
-            {[
-              { icon: FaGithub, href: 'https://github.com/ChristianMoraLopez' },
-              { icon: FaLinkedin, href: 'https://www.linkedin.com/in/christian-mora-lopez/' },
-            ].map((social, index) => (
-              <motion.a
-                key={index}
-                variants={socialVariants}
-                whileHover={{ scale: 1.2, rotate: 5 }}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-600 dark:text-gray-300 hover:text-primary"
-              >
-                <social.icon className="text-4xl sm:text-5xl" />
-              </motion.a>
-            ))}
-          </motion.div>
-          
-          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full sm:w-auto px-4 sm:px-0">
-            {[
-              { text: 'Ver Proyectos', to: 'projects', primary: true },
-              { text: 'Contactar', to: 'contact', primary: false },
-            ].map((button, index) => (
-              <motion.div
-                key={index}
-                variants={buttonVariants}
-                initial="hidden"
-                animate="visible"
-                whileHover="hover"
-                className="w-full sm:w-auto"
-              >
-                <Link
-                  to={button.to}
-                  smooth={true}
-                  duration={500}
-                  className={`
-                    block w-full sm:w-auto px-8 py-4 rounded-lg transform transition-all text-center
-                    ${button.primary
-                      ? 'bg-primary text-white hover:bg-secondary'
-                      : 'border-2 border-primary text-primary hover:bg-primary hover:text-white'
-                    }
-                    shadow-lg hover:shadow-xl
-                  `}
+            {o.icons.map((Icon, j) => {
+              const angle = ((360 / o.icons.length) * j + i * 25) * (Math.PI / 180)
+              return (
+                <div
+                  key={j}
+                  className="absolute -translate-x-1/2 -translate-y-1/2"
+                  style={{ left: `${50 + 50 * Math.cos(angle)}%`, top: `${50 + 50 * Math.sin(angle)}%` }}
                 >
-                  {button.text}
-                </Link>
-              </motion.div>
-            ))}
+                  <div
+                    className="animate-spin"
+                    style={{
+                      animationDuration: `${o.duration}s`,
+                      animationDirection: o.reverse ? 'normal' : 'reverse',
+                    }}
+                  >
+                    <div className="grid size-10 place-items-center rounded-2xl border border-line bg-surface/80 text-lg text-fg/80 shadow-lg backdrop-blur sm:size-12 sm:text-xl">
+                      <Icon />
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      ))}
+
+      <motion.div style={{ rotate: spin }} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <div className="absolute inset-0 -z-10 scale-150 rounded-full bg-accent/30 blur-3xl" />
+        <Logo className="hero-sun size-28 text-accent drop-shadow-[0_0_30px_var(--glow)] sm:size-36" />
+      </motion.div>
+    </motion.div>
+  )
+}
+
+export default function Hero({ ready }) {
+  const root = useRef(null)
+  const scrollTo = useScrollTo()
+  const { scrollY } = useScroll()
+  const contentY = useTransform(scrollY, [0, 700], [0, -140])
+  const contentOpacity = useTransform(scrollY, [0, 520], [1, 0])
+
+  useGSAP(
+    () => {
+      if (!ready || prefersReducedMotion()) return
+
+      const split = SplitText.create('.hero-name', { type: 'words,chars', mask: 'chars', charsClass: 'split-char' })
+      const tl = gsap.timeline({ defaults: { ease: 'expo.out' } })
+      tl.from(split.chars, { yPercent: 120, rotate: 8, duration: 1.3, stagger: 0.035 })
+        .from('.hero-fade', { y: 30, opacity: 0, duration: 1, stagger: 0.08 }, 0.35)
+        .from('.hero-orbit', { scale: 0.6, opacity: 0, rotate: -40, duration: 1.8 }, 0.1)
+        .from('.hero-sun .logo-trace', { drawSVG: 0, duration: 1.6, ease: 'power2.inOut' }, 0.3)
+
+      // Las frases rotan con efecto "decrypt" (GSAP ScrambleText).
+      const words = profile.crafts
+      const scramble = gsap.timeline({ repeat: -1, delay: 1.6 })
+      words.forEach((word, i) => {
+        const next = words[(i + 1) % words.length]
+        scramble.to('.hero-craft', {
+          duration: 1.1,
+          scrambleText: { text: next, chars: '01<>/{}*#', speed: 0.5, revealDelay: 0.25 },
+          ease: 'none',
+          delay: 2.2,
+        })
+      })
+    },
+    { scope: root, dependencies: [ready] },
+  )
+
+  return (
+    <section ref={root} id="inicio" data-nav="inicio" className="noise relative isolate min-h-[100svh] overflow-hidden">
+      <div className="absolute inset-0 -z-20">
+        <ShaderBackground />
+      </div>
+      <div className="dot-grid absolute inset-0 -z-10 opacity-50 [mask-image:radial-gradient(ellipse_70%_60%_at_50%_40%,black,transparent)]" />
+      <div className="absolute inset-x-0 bottom-0 -z-10 h-48 bg-linear-to-b from-transparent to-bg" />
+
+      <div className="container-x grid min-h-[100svh] items-center gap-10 pt-28 pb-24 lg:grid-cols-[1.15fr_1fr]">
+        <motion.div style={{ y: contentY, opacity: contentOpacity }} className="relative z-10">
+          <div className="hero-fade mb-7 flex flex-wrap items-center gap-2">
+            <span className="chip">
+              <span className="relative flex size-2">
+                <span className="absolute inline-flex size-full animate-ping-slow rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex size-2 rounded-full bg-emerald-400" />
+              </span>
+              Disponible para proyectos
+            </span>
+            <span className="chip">
+              <FiMapPin /> {profile.location}
+            </span>
           </div>
 
-          {/* Buy Me a Coffee Button */}
-          <motion.div
-            variants={buttonVariants}
-            initial="hidden"
-            animate="visible"
-            whileHover="hover"
-            className="mt-4"
-          >
-            <a
-              href="https://buymeacoffee.com/christianmora"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center px-6 py-3 bg-[#FFDD00] text-black rounded-lg shadow-lg hover:shadow-xl transition-all"
-            >
-              <img 
-                src="https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg" 
-                alt="Buy me a coffee" 
-                className="h-6 mr-2"
-              />
-              Buy me a coffee
-            </a>
-          </motion.div>
-        </div>
-        
-        {/* Fixed WhatsApp Button */}
-        <motion.a
-          href="https://wa.link/rc84s3"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <FaWhatsapp className="text-3xl" />
-        </motion.a>
-      </div>
-    </section>
-  );
-};
+          <h1 className="hero-name font-display text-[clamp(3.4rem,12vw,6.2rem)] xl:text-[8.2rem] leading-[0.86] font-bold tracking-[-0.04em]">
+            Christian
+            <br />
+            Mora<span className="text-accent">.</span>
+          </h1>
 
-export default Hero; 
+          <p className="hero-fade mt-8 font-display text-[clamp(1.5rem,3.4vw,2.4rem)] leading-tight font-medium tracking-tight">
+            <span className="text-muted">Construyo </span>
+            <span className="hero-craft text-gradient">{profile.crafts[0]}</span>
+          </p>
+
+          <p className="hero-fade mt-5 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
+            {profile.role} en Bogotá. Del e-commerce en producción a apps de escritorio con IA local, siempre con
+            obsesión por el detalle y el rendimiento.
+          </p>
+
+          <div className="hero-fade mt-10 flex flex-wrap items-center gap-3">
+            <Magnetic>
+              <button
+                type="button"
+                onClick={() => scrollTo('proyectos')}
+                data-cursor="Ver"
+                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-fg px-7 py-4 font-medium text-bg"
+              >
+                <span className="absolute inset-0 -translate-x-full bg-linear-to-r from-accent via-accent-2 to-accent-3 transition-transform duration-500 ease-out group-hover:translate-x-0" />
+                <span className="relative">Ver proyectos</span>
+                <FiArrowDown className="relative transition-transform group-hover:translate-y-0.5" />
+              </button>
+            </Magnetic>
+            <Magnetic>
+              <a
+                href={profile.whatsapp}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex items-center gap-2 rounded-full border border-line-strong bg-surface/40 px-7 py-4 font-medium backdrop-blur transition-colors hover:border-fg"
+              >
+                Hablemos
+                <FiArrowUpRight className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </a>
+            </Magnetic>
+            <div className="ml-1 flex items-center gap-1">
+              {[
+                { href: profile.github, Icon: FiGithub, label: 'GitHub' },
+                { href: profile.linkedin, Icon: FiLinkedin, label: 'LinkedIn' },
+              ].map(({ href, Icon, label }) => (
+                <Magnetic key={label} strength={0.5}>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    className="grid size-12 place-items-center rounded-full text-xl text-muted transition-colors hover:text-fg"
+                  >
+                    <Icon />
+                  </a>
+                </Magnetic>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+
+        <div className="pointer-events-auto absolute inset-0 -z-10 grid place-items-center opacity-[0.16] lg:relative lg:inset-auto lg:z-0 lg:opacity-100">
+          <OrbitSystem />
+        </div>
+      </div>
+
+      <button
+        type="button"
+        onClick={() => scrollTo('proyectos')}
+        className="hero-fade absolute bottom-8 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-xs tracking-[0.3em] text-muted uppercase sm:flex"
+        aria-label="Bajar a proyectos"
+      >
+        <span className="flex h-10 w-6 justify-center rounded-full border border-line-strong p-1.5">
+          <motion.span
+            className="size-1.5 rounded-full bg-fg"
+            animate={{ y: [0, 14, 0], opacity: [1, 0.2, 1] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+          />
+        </span>
+        Scroll
+      </button>
+    </section>
+  )
+}

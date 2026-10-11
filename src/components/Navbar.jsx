@@ -1,189 +1,173 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-scroll';
-import { FaSun, FaMoon, FaBars, FaTimes } from 'react-icons/fa';
-import { motion, AnimatePresence } from 'framer-motion';
-import AnimatedLogo from './AnimatedLogo';
+import { useEffect, useState } from 'react'
+import { AnimatePresence, motion, useMotionValueEvent, useScroll, useSpring } from 'motion/react'
+import { FiArrowUpRight, FiMenu, FiX } from 'react-icons/fi'
+import Logo from './ui/Logo'
+import ThemeToggle from './ui/ThemeToggle'
+import { useScrollTo } from './providers/SmoothScroll'
+import { profile } from '../data/profile'
 
-const Navbar = ({ darkMode, setDarkMode }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const [isVisible, setIsVisible] = useState(true);
+const links = [
+  { id: 'inicio', label: 'Inicio' },
+  { id: 'proyectos', label: 'Proyectos' },
+  { id: 'sobre-mi', label: 'Sobre mí' },
+  { id: 'contacto', label: 'Contacto' },
+]
+
+export default function Navbar({ dark, onToggleTheme }) {
+  const scrollTo = useScrollTo()
+  const { scrollY, scrollYProgress } = useScroll()
+  const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 30, restDelta: 0.001 })
+  const [hidden, setHidden] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const [active, setActive] = useState('inicio')
+  const [open, setOpen] = useState(false)
+
+  useMotionValueEvent(scrollY, 'change', (v) => {
+    const prev = scrollY.getPrevious() ?? 0
+    setHidden(v > prev && v > 240 && !open)
+    setScrolled(v > 24)
+  })
 
   useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      
-      if (currentScrollY > lastScrollY) {
-        setIsVisible(false);
-      } else {
-        setIsVisible(true);
-      }
-      
-      setIsScrolled(currentScrollY > 20);
-      setLastScrollY(currentScrollY);
-    };
+    const sections = [...document.querySelectorAll('[data-nav]')]
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => e.isIntersecting && setActive(e.target.getAttribute('data-nav')))
+      },
+      { rootMargin: '-45% 0px -50% 0px' },
+    )
+    sections.forEach((s) => io.observe(s))
+    return () => io.disconnect()
+  }, [])
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+  useEffect(() => {
+    document.documentElement.style.overflow = open ? 'hidden' : ''
+  }, [open])
 
-  const navLinks = [
-    { name: 'Inicio', to: 'hero' },
-    { name: 'Acerca de mí', to: 'about' },
-    { name: 'Proyectos', to: 'projects' },
-    { name: 'Contacto', to: 'contact' },
-  ];
-
-  const navVariants = {
-    hidden: { y: -100 },
-    visible: {
-      y: 0,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 20
-      }
-    }
-  };
-
-  const linkVariants = {
-    hover: {
-      scale: 1.1,
-      color: "#2563eb",
-      transition: {
-        type: "spring",
-        stiffness: 400,
-        damping: 10
-      }
-    }
-  };
+  const go = (id) => {
+    setOpen(false)
+    scrollTo(id === 'inicio' ? 0 : id)
+  }
 
   return (
-    <motion.nav 
-      initial="hidden"
-      animate={isVisible ? "visible" : "hidden"}
-      variants={navVariants}
-      className={`fixed w-full z-50 transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-lg border-b border-gray-200/20 dark:border-gray-700/20' 
-          : 'bg-transparent'
-      }`}
-    >
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-20">
-          <motion.div 
-            className="flex items-center space-x-4"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <AnimatedLogo 
-              variant={darkMode ? "white" : "default"} 
-              className="w-12 h-12"
-              animate={false}
-            />
-            <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary animate-gradient">
-              Christian Mora
-            </span>
-          </motion.div>
+    <>
+      <motion.div
+        aria-hidden
+        className="fixed inset-x-0 top-0 z-[60] h-0.5 origin-left bg-linear-to-r from-accent via-accent-2 to-accent-3"
+        style={{ scaleX: progress }}
+      />
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => (
-              <motion.div
-                key={link.to}
-                variants={linkVariants}
-                whileHover="hover"
-              >
-                <Link
-                  to={link.to}
-                  smooth={true}
-                  duration={500}
-                  className="cursor-pointer text-gray-700 dark:text-gray-300 font-medium relative group"
+      <motion.header
+        initial={{ y: -90, opacity: 0 }}
+        animate={{ y: hidden ? -110 : 0, opacity: 1 }}
+        transition={{ type: 'spring', stiffness: 260, damping: 30 }}
+        className="fixed inset-x-0 top-3 z-50 px-3 sm:top-4"
+      >
+        <nav
+          className={`mx-auto flex max-w-5xl items-center justify-between gap-2 rounded-full border py-2 pr-2 pl-3 transition-[background-color,border-color,box-shadow] duration-500 ${
+            scrolled
+              ? 'border-line bg-bg/70 shadow-[0_10px_40px_-10px_rgb(0_0_0/0.35)] backdrop-blur-xl'
+              : 'border-transparent bg-transparent'
+          }`}
+        >
+          <button type="button" onClick={() => go('inicio')} className="group flex items-center gap-2.5" aria-label="Ir al inicio">
+            <Logo className="size-8 text-accent transition-transform duration-700 group-hover:rotate-[360deg]" />
+            <span className="font-display text-[15px] font-semibold tracking-tight">Christian Mora</span>
+          </button>
+
+          <ul className="hidden items-center gap-1 md:flex">
+            {links.map((l) => (
+              <li key={l.id}>
+                <button
+                  type="button"
+                  onClick={() => go(l.id)}
+                  className={`relative rounded-full px-4 py-2 text-sm transition-colors ${
+                    active === l.id ? 'text-fg' : 'text-muted hover:text-fg'
+                  }`}
                 >
-                  {link.name}
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300"></span>
-                </Link>
-              </motion.div>
-            ))}
-            <motion.button
-              whileHover={{ scale: 1.1, rotate: 180 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => setDarkMode(!darkMode)}
-              className="p-3 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-300 shadow-lg hover:shadow-xl"
-              aria-label="Toggle dark mode"
-            >
-              {darkMode ? <FaSun className="text-xl text-yellow-400" /> : <FaMoon className="text-xl text-gray-700" />}
-            </motion.button>
-          </div>
-
-          {/* Mobile Navigation Button */}
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-3 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-300 shadow-lg hover:shadow-xl"
-            aria-label="Toggle menu"
-          >
-            {isOpen ? <FaTimes className="text-xl" /> : <FaBars className="text-xl" />}
-          </motion.button>
-        </div>
-
-        {/* Mobile Navigation Menu */}
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="md:hidden overflow-hidden bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-b-lg shadow-lg border border-gray-200/20 dark:border-gray-700/20"
-            >
-              <div className="py-6 space-y-6 px-6">
-                {navLinks.map((link) => (
-                  <motion.div
-                    key={link.to}
-                    whileHover={{ x: 10 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Link
-                      to={link.to}
-                      smooth={true}
-                      duration={500}
-                      className="block text-gray-700 dark:text-gray-300 hover:text-primary font-medium text-lg"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {link.name}
-                    </Link>
-                  </motion.div>
-                ))}
-                <motion.button
-                  whileHover={{ x: 10 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => {
-                    setDarkMode(!darkMode);
-                    setIsOpen(false);
-                  }}
-                  className="w-full text-left p-3 text-gray-700 dark:text-gray-300 hover:text-primary font-medium text-lg flex items-center space-x-2"
-                >
-                  {darkMode ? (
-                    <>
-                      <FaSun className="text-yellow-400" />
-                      <span>Modo Claro</span>
-                    </>
-                  ) : (
-                    <>
-                      <FaMoon />
-                      <span>Modo Oscuro</span>
-                    </>
+                  {active === l.id && (
+                    <motion.span
+                      layoutId="nav-pill"
+                      className="absolute inset-0 -z-10 rounded-full border border-line bg-surface"
+                      transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                    />
                   )}
-                </motion.button>
+                  {l.label}
+                </button>
+              </li>
+            ))}
+          </ul>
+
+          <div className="flex items-center gap-2">
+            <ThemeToggle dark={dark} onToggle={onToggleTheme} />
+            <a
+              href={profile.whatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group hidden items-center gap-1.5 rounded-full bg-fg px-4 py-2.5 text-sm font-medium text-bg transition-transform hover:scale-[1.03] sm:inline-flex"
+            >
+              Hablemos
+              <FiArrowUpRight className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </a>
+            <button
+              type="button"
+              onClick={() => setOpen((o) => !o)}
+              className="grid size-10 place-items-center rounded-full border border-line bg-surface/60 md:hidden"
+              aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
+              aria-expanded={open}
+            >
+              {open ? <FiX /> : <FiMenu />}
+            </button>
+          </div>
+        </nav>
+      </motion.header>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ clipPath: 'circle(0% at calc(100% - 2.5rem) 2.5rem)' }}
+            animate={{ clipPath: 'circle(150% at calc(100% - 2.5rem) 2.5rem)' }}
+            exit={{ clipPath: 'circle(0% at calc(100% - 2.5rem) 2.5rem)' }}
+            transition={{ duration: 0.7, ease: [0.7, 0, 0.2, 1] }}
+            className="noise fixed inset-0 z-40 flex flex-col justify-between bg-bg px-6 pt-28 pb-10 md:hidden"
+          >
+            <ul className="space-y-2">
+              {links.map((l, i) => (
+                <li key={l.id} className="overflow-hidden">
+                  <motion.button
+                    type="button"
+                    onClick={() => go(l.id)}
+                    initial={{ y: '110%' }}
+                    animate={{ y: 0 }}
+                    exit={{ y: '110%' }}
+                    transition={{ delay: 0.15 + i * 0.06, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    className="flex items-baseline gap-3 font-display text-5xl font-semibold tracking-tight"
+                  >
+                    <span className="font-mono text-xs text-muted">0{i + 1}</span>
+                    <span className={active === l.id ? 'text-gradient' : ''}>{l.label}</span>
+                  </motion.button>
+                </li>
+              ))}
+            </ul>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ delay: 0.45 }}
+              className="space-y-3 text-sm text-muted"
+            >
+              <a href={`mailto:${profile.email}`} className="block text-fg">
+                {profile.email}
+              </a>
+              <div className="flex gap-4">
+                <a href={profile.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a href={profile.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                <a href={profile.whatsapp} target="_blank" rel="noopener noreferrer">WhatsApp</a>
               </div>
             </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </motion.nav>
-  );
-};
-
-export default Navbar; 
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  )
+}

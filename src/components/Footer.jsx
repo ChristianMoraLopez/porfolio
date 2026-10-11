@@ -1,44 +1,71 @@
-import React from 'react';
-import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
+import { motion } from 'motion/react'
+import { FiArrowUp, FiGithub, FiLinkedin, FiMail } from 'react-icons/fi'
+import Logo from './ui/Logo'
+import Magnetic from './ui/Magnetic'
+import { useScrollTo } from './providers/SmoothScroll'
+import { profile } from '../data/profile'
 
-const Footer = () => {
+export default function Footer() {
+  const scrollTo = useScrollTo()
+
   return (
-    <footer className="bg-gray-900 text-white py-8">
-      <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row justify-between items-center">
-          <div className="mb-4 md:mb-0">
-            <p className="text-sm">
-              © {new Date().getFullYear()} Christian Mora. Todos los derechos reservados.
-            </p>
+    <footer className="relative overflow-hidden border-t border-line">
+      <div className="container-x flex flex-col gap-10 py-14 md:flex-row md:items-end md:justify-between">
+        <div>
+          <div className="flex items-center gap-3">
+            <Logo className="size-10 text-accent" />
+            <span className="font-display text-xl font-semibold tracking-tight">Christian Mora</span>
           </div>
-          <div className="flex space-x-6">
+          <p className="mt-4 max-w-sm text-sm text-muted">
+            Hecho con React, Motion, GSAP, React Spring, Lenis y un shader WebGL propio.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {[
+            { href: profile.github, Icon: FiGithub, label: 'GitHub' },
+            { href: profile.linkedin, Icon: FiLinkedin, label: 'LinkedIn' },
+            { href: `mailto:${profile.email}`, Icon: FiMail, label: 'Correo' },
+          ].map(({ href, Icon, label }) => (
             <a
-              href="https://github.com/ChristianMoraLopez"
-              target="_blank"
+              key={label}
+              href={href}
+              target={href.startsWith('mailto') ? undefined : '_blank'}
               rel="noopener noreferrer"
-              className="hover:text-primary transition-colors"
+              aria-label={label}
+              className="grid size-11 place-items-center rounded-full border border-line text-muted transition-colors hover:border-fg hover:text-fg"
             >
-              <FaGithub className="text-xl" />
+              <Icon />
             </a>
-            <a
-              href="https://www.linkedin.com/in/christian-mora-lopez/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-primary transition-colors"
+          ))}
+          <Magnetic strength={0.5}>
+            <button
+              type="button"
+              onClick={() => scrollTo(0)}
+              aria-label="Volver arriba"
+              className="group grid size-11 place-items-center rounded-full bg-fg text-bg"
             >
-              <FaLinkedin className="text-xl" />
-            </a>
-            <a
-              href="mailto:christianmoralopez@hotmail.com"
-              className="hover:text-primary transition-colors"
-            >
-              <FaEnvelope className="text-xl" />
-            </a>
-          </div>
+              <FiArrowUp className="transition-transform group-hover:-translate-y-0.5" />
+            </button>
+          </Magnetic>
         </div>
       </div>
-    </footer>
-  );
-};
 
-export default Footer; 
+      <div className="container-x flex flex-col gap-2 border-t border-line py-6 text-xs text-muted sm:flex-row sm:justify-between">
+        <span>© {new Date().getFullYear()} {profile.fullName}. Todos los derechos reservados.</span>
+        <span>{profile.location}</span>
+      </div>
+
+      <motion.p
+        aria-hidden
+        initial={{ y: '40%', opacity: 0 }}
+        whileInView={{ y: '0%', opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+        className="pointer-events-none -mb-[0.2em] text-center font-display text-[14vw] leading-none font-bold tracking-[-0.05em] whitespace-nowrap text-transparent select-none [-webkit-text-stroke:1px_var(--line-strong)]"
+      >
+        Christian Mora
+      </motion.p>
+    </footer>
+  )
+}

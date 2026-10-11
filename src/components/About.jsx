@@ -1,110 +1,198 @@
-import React from 'react';
-import { FaEnvelope, FaMapMarkerAlt, FaPhone, FaGraduationCap, FaBriefcase, FaCode } from 'react-icons/fa';
+import { useEffect, useRef, useState } from 'react'
+import { motion, useScroll, useSpring } from 'motion/react'
+import { FiBookOpen, FiBriefcase, FiDatabase, FiLayers, FiMapPin, FiMonitor, FiServer, FiZap } from 'react-icons/fi'
+import CountUp from './ui/CountUp'
+import SpotlightCard from './ui/SpotlightCard'
+import { gsap, SplitText, useGSAP, prefersReducedMotion } from '../lib/gsap'
+import { profile, skillGroups, timeline } from '../data/profile'
 
-const About = () => {
-  const skills = [
-    "PHP / Laravel",
-    "Java (JPA, JDBC, Hibernate, Spring)",
-    "SQL (MySQL)",
-    "HTML / CSS / Tailwind / Bootstrap",
-    "JavaScript / jQuery / React",
-    "C#",
-    "R",
-    "Git",
-    "Metodologías Ágiles"
-  ];
+const groupIcons = { layers: FiLayers, server: FiServer, database: FiDatabase, monitor: FiMonitor }
+const kindIcons = { build: FiZap, work: FiBriefcase, study: FiBookOpen }
+
+function BogotaClock() {
+  const format = () =>
+    new Intl.DateTimeFormat('es-CO', {
+      timeZone: 'America/Bogota',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    }).format(new Date())
+  const [time, setTime] = useState(format)
+  useEffect(() => {
+    const id = setInterval(() => setTime(format()), 1000)
+    return () => clearInterval(id)
+  }, [])
+  return <span className="font-mono tabular-nums">{time}</span>
+}
+
+const reveal = {
+  initial: { opacity: 0, y: 40 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: '-80px' },
+}
+
+function Timeline() {
+  const ref = useRef(null)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 75%', 'end 60%'] })
+  const line = useSpring(scrollYProgress, { stiffness: 120, damping: 30 })
 
   return (
-    <section id="about" className="py-20 bg-white dark:bg-gray-800">
-      <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-12">Acerca de mí</h2>
-        
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-8 shadow-lg">
-            <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold mb-2">Christian Mora</h3>
-              <p className="text-xl text-gray-600 dark:text-gray-300 mb-4">Desarrollador de Software / Analista de Datos</p>
-              <div className="flex flex-wrap justify-center gap-4 text-gray-600 dark:text-gray-300">
-                <span className="flex items-center">
-                  <FaEnvelope className="mr-2" />
-                  christianmoralopez@hotmail.com
-                </span>
-                <span className="flex items-center">
-                  <FaMapMarkerAlt className="mr-2" />
-                  Bogotá, Colombia
-                </span>
-                <span className="flex items-center">
-                  <FaPhone className="mr-2" />
-                  3144715980
-                </span>
-              </div>
-            </div>
+    <div ref={ref} className="relative pl-10 sm:pl-14">
+      <div className="absolute top-2 bottom-2 left-[15px] w-px bg-line sm:left-[23px]" />
+      <motion.div
+        className="absolute top-2 bottom-2 left-[15px] w-px origin-top bg-linear-to-b from-accent via-accent-2 to-accent-3 sm:left-[23px]"
+        style={{ scaleY: line }}
+      />
+      <ol className="space-y-10">
+        {timeline.map((item, i) => {
+          const Icon = kindIcons[item.kind]
+          return (
+            <motion.li
+              key={item.title}
+              {...reveal}
+              transition={{ type: 'spring', stiffness: 120, damping: 20, delay: i * 0.04 }}
+              className="relative"
+            >
+              <span className="absolute top-0 -left-10 grid size-8 place-items-center rounded-full border border-line-strong bg-bg text-accent sm:-left-14 sm:size-12">
+                <Icon className="sm:text-lg" />
+              </span>
+              <p className="font-mono text-xs text-muted">{item.period}</p>
+              <h4 className="mt-1 font-display text-xl font-semibold tracking-tight sm:text-2xl">{item.title}</h4>
+              <p className="text-sm text-accent">{item.place}</p>
+              <p className="mt-2 max-w-2xl leading-relaxed text-muted">{item.detail}</p>
+            </motion.li>
+          )
+        })}
+      </ol>
+    </div>
+  )
+}
 
-            <div className="space-y-6">
+export default function About() {
+  const root = useRef(null)
+
+  // El primer párrafo se "enciende" palabra por palabra al hacer scroll.
+  useGSAP(
+    () => {
+      if (prefersReducedMotion()) return
+      SplitText.create('.about-lead', {
+        type: 'words',
+        autoSplit: true,
+        onSplit(self) {
+          return gsap.fromTo(
+            self.words,
+            { opacity: 0.12 },
+            {
+              opacity: 1,
+              stagger: 0.1,
+              ease: 'none',
+              scrollTrigger: { trigger: '.about-lead', start: 'top 80%', end: 'bottom 45%', scrub: true },
+            },
+          )
+        },
+      })
+    },
+    { scope: root },
+  )
+
+  return (
+    <section ref={root} id="sobre-mi" data-nav="sobre-mi" className="relative py-28 sm:py-36">
+      <div className="container-x">
+        <p className="chip mb-8">03 — Sobre mí</p>
+        <p className="about-lead max-w-5xl font-display text-[clamp(1.6rem,3.6vw,3rem)] leading-[1.15] font-medium tracking-tight">
+          {profile.bio[0]}
+        </p>
+
+        <div className="mt-20 grid gap-4 md:grid-cols-6 lg:grid-cols-12">
+          {profile.stats.map((s, i) => (
+            <motion.div
+              key={s.label}
+              {...reveal}
+              transition={{ type: 'spring', stiffness: 120, damping: 20, delay: i * 0.06 }}
+              className="md:col-span-3"
+            >
+              <SpotlightCard className="h-full p-6 sm:p-7">
+                <CountUp
+                  value={s.value}
+                  suffix={s.suffix}
+                  className="text-gradient font-display text-5xl font-bold tracking-tight sm:text-6xl"
+                />
+                <p className="mt-2 text-sm text-muted">{s.label}</p>
+              </SpotlightCard>
+            </motion.div>
+          ))}
+
+          <motion.div {...reveal} transition={{ type: 'spring', stiffness: 120, damping: 20 }} className="md:col-span-4 lg:col-span-8">
+            <SpotlightCard className="h-full p-7 sm:p-9">
+              <p className="chip">
+                <span className="relative flex size-2">
+                  <span className="absolute inline-flex size-full animate-ping-slow rounded-full bg-accent opacity-75" />
+                  <span className="relative inline-flex size-2 rounded-full bg-accent" />
+                </span>
+                Ahora mismo
+              </p>
+              <p className="mt-6 text-lg leading-relaxed text-fg/90 sm:text-xl">{profile.bio[1]}</p>
+            </SpotlightCard>
+          </motion.div>
+
+          <motion.div {...reveal} transition={{ type: 'spring', stiffness: 120, damping: 20, delay: 0.08 }} className="md:col-span-2 lg:col-span-4">
+            <SpotlightCard className="flex h-full flex-col justify-between gap-8 p-7">
+              <div className="flex items-center gap-2 text-muted">
+                <FiMapPin /> {profile.location}
+              </div>
               <div>
-                <h4 className="text-xl font-semibold mb-4 flex items-center">
-                  <FaCode className="mr-2" />
-                  Perfil Profesional
-                </h4>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Técnico Profesional en Programación de Aplicaciones de Software y estudiante de cuarto semestre de Ingeniería de Software. 
-                  Especializado en desarrollo web y bases de datos, con experiencia en PHP, Java (JPA, JDBC, Hibernate, Spring), 
-                  SQL (MySQL), y frameworks frontend como Tailwind y Bootstrap. Experiencia en integración de APIs de pago como PayU 
-                  y conexiones a bases de datos en AWS.
+                <p className="font-display text-4xl font-semibold tracking-tight">
+                  <BogotaClock />
                 </p>
+                <p className="mt-1 text-sm text-muted">Hora local · UTC−5</p>
               </div>
+              <p className="text-sm text-muted">{profile.languages}</p>
+            </SpotlightCard>
+          </motion.div>
 
-              <div>
-                <h4 className="text-xl font-semibold mb-4 flex items-center">
-                  <FaBriefcase className="mr-2" />
-                  Experiencia Laboral
-                </h4>
-                <div className="space-y-4">
-                  <div>
-                    <h5 className="font-semibold">Programador Novato - OET</h5>
-                    <p className="text-gray-500 dark:text-gray-400">Septiembre 2024 - Actual</p>
-                    <ul className="list-disc list-inside text-gray-600 dark:text-gray-300 mt-2">
-                      <li>Desarrollo de funcionalidades para procesamiento de datos contables y financieros.</li>
-                      <li>Implementación de sistemas de pre-rentabilidad, rentabilidad y reversión de pre-rentabilidad.</li>
-                      <li>Creación de consultas SQL optimizadas para grandes volúmenes de datos.</li>
-                      <li>Desarrollo de interfaces de usuario con jQuery y JavaScript vanilla.</li>
-                      <li>Manejo de validaciones y procesamiento asíncrono con AJAX.</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h4 className="text-xl font-semibold mb-4 flex items-center">
-                  <FaGraduationCap className="mr-2" />
-                  Educación
-                </h4>
-                <ul className="list-disc list-inside text-gray-600 dark:text-gray-300">
-                  <li>Ingeniería de Software - Fundación Universitaria Compensar (2022 - 2027)</li>
-                  <li>Curso Frontend Developer - Oracle University, Bogotá (2022 - 2023)</li>
-                  <li>Curso Análisis de Datos - Google Coursera (2023)</li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="text-xl font-semibold mb-4">Habilidades Técnicas</h4>
-                <div className="flex flex-wrap gap-2">
-                  {skills.map((skill, index) => (
-                    <span 
-                      key={index}
-                      className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm"
-                    >
-                      {skill}
+          {skillGroups.map((g, i) => {
+            const Icon = groupIcons[g.icon]
+            return (
+              <motion.div
+                key={g.title}
+                {...reveal}
+                transition={{ type: 'spring', stiffness: 120, damping: 20, delay: i * 0.06 }}
+                className="md:col-span-3 lg:col-span-6"
+              >
+                <SpotlightCard className="h-full p-7">
+                  <div className="flex items-center gap-3">
+                    <span className="grid size-10 place-items-center rounded-xl bg-accent/10 text-accent">
+                      <Icon />
                     </span>
-                  ))}
-                </div>
-              </div>
-            </div>
+                    <h3 className="font-display text-xl font-semibold tracking-tight">{g.title}</h3>
+                  </div>
+                  <ul className="mt-5 flex flex-wrap gap-2">
+                    {g.items.map((item) => (
+                      <li
+                        key={item}
+                        className="rounded-full border border-line bg-bg-soft px-3 py-1.5 text-sm transition-colors hover:border-accent hover:text-accent"
+                      >
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </SpotlightCard>
+              </motion.div>
+            )
+          })}
+        </div>
+
+        <div className="mt-28 grid gap-10 lg:grid-cols-[1fr_2fr]">
+          <div className="lg:sticky lg:top-32 lg:self-start">
+            <h3 className="font-display text-4xl font-bold tracking-tight sm:text-5xl">Recorrido</h3>
+            <p className="mt-4 max-w-xs text-muted">
+              Del soporte en inglés en Amazon al backend financiero y a los datos y la automatización en Capgemini.
+            </p>
           </div>
+          <Timeline />
         </div>
       </div>
     </section>
-  );
-};
-
-export default About; 
+  )
+}

@@ -1,18 +1,33 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/src/images/logo.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Portfolio personal de Christian Mora - Desarrollador Full Stack" />
-    <meta name="theme-color" content="#2563eb" />
-    <title>Christian Mora | Portfolio</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="Christian Mora — desarrollador full stack y de datos en Bogotá. Apps web, herramientas de escritorio con IA local y productos que la gente usa de verdad." />
+    <meta name="theme-color" content="#05060b" />
+    <meta property="og:title" content="Christian Mora | Portafolio" />
+    <meta property="og:description" content="Desarrollador full stack y de datos. Next.js, Python, Rust/Tauri, Supabase, IA local." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/projects/luks.webp" />
+    <title>Christian Mora | Portafolio</title>
+    <script>
+      // Aplica el tema guardado antes del primer pintado para evitar parpadeos.
+      try {
+        const saved = localStorage.getItem('theme');
+        const dark = saved ? saved === 'dark' : true;
+        document.documentElement.classList.toggle('dark', dark);
+      } catch (e) {}
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
-</html> 
+</html>

@@ -1,42 +1,129 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { FaWhatsapp } from 'react-icons/fa';
+import { useState } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
+import { FiArrowUpRight, FiCheck, FiCoffee, FiCopy, FiGithub, FiLinkedin } from 'react-icons/fi'
+import { FaWhatsapp } from 'react-icons/fa'
+import Magnetic from './ui/Magnetic'
+import SplitReveal from './ui/SplitReveal'
+import VelocityMarquee from './ui/VelocityMarquee'
+import { profile } from '../data/profile'
 
-const Contact = () => {
-  const handleWhatsAppClick = () => {
-    window.open('https://wa.link/rc84s3', '_blank');
-  };
+const channels = [
+  { label: 'WhatsApp', detail: 'Respuesta rápida', href: profile.whatsapp, Icon: FaWhatsapp },
+  { label: 'LinkedIn', detail: 'Perfil profesional', href: profile.linkedin, Icon: FiLinkedin },
+  { label: 'GitHub', detail: '60+ repositorios', href: profile.github, Icon: FiGithub },
+  { label: 'Buy me a coffee', detail: 'Si algo te sirvió', href: profile.coffee, Icon: FiCoffee },
+]
 
+function CopyEmail() {
+  const [copied, setCopied] = useState(false)
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(profile.email)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1800)
+    } catch {
+      window.location.href = `mailto:${profile.email}`
+    }
+  }
   return (
-    <section id="contact" className="py-20 bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="max-w-3xl mx-auto text-center"
-        >
-          <h2 className="text-4xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-            ¿Tienes un proyecto en mente?
-          </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-300 mb-12">
-            Estoy aquí para ayudarte a hacer realidad tu proyecto. Contáctame a través de WhatsApp para una conversación directa y personalizada.
-          </p>
-          
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleWhatsAppClick}
-            className="inline-flex items-center px-8 py-4 bg-[#25D366] text-white rounded-lg shadow-lg hover:shadow-xl transition-all"
+    <button
+      type="button"
+      onClick={copy}
+      className="group inline-flex max-w-full items-center gap-3 rounded-full border border-line-strong bg-surface/60 py-2 pr-2 pl-5 backdrop-blur transition-colors hover:border-fg"
+    >
+      <span className="truncate font-mono text-sm sm:text-base">{profile.email}</span>
+      <span className="relative grid size-9 shrink-0 place-items-center overflow-hidden rounded-full bg-fg text-bg">
+        <AnimatePresence mode="popLayout" initial={false}>
+          <motion.span
+            key={copied ? 'ok' : 'copy'}
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -20, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
           >
-            <FaWhatsapp className="text-2xl mr-3" />
-            Contactar por WhatsApp
-          </motion.button>
-        </motion.div>
+            {copied ? <FiCheck /> : <FiCopy />}
+          </motion.span>
+        </AnimatePresence>
+      </span>
+      <span className="sr-only" aria-live="polite">
+        {copied ? 'Correo copiado' : ''}
+      </span>
+    </button>
+  )
+}
+
+export default function Contact() {
+  return (
+    <section id="contacto" data-nav="contacto" className="relative overflow-hidden pt-10 pb-28 sm:pb-36">
+      <VelocityMarquee baseVelocity={-1.6} className="border-y border-line py-6">
+        {['Hablemos', 'Let’s build', 'Construyamos', 'Say hi'].map((w) => (
+          <span key={w} className="flex items-center gap-8 px-8 font-display text-5xl font-bold tracking-tight sm:text-7xl">
+            {w}
+            <span className="text-gradient text-4xl sm:text-5xl">✦</span>
+          </span>
+        ))}
+      </VelocityMarquee>
+
+      <div className="container-x mt-24 grid gap-16 lg:grid-cols-[1.2fr_1fr] lg:items-center">
+        <div>
+          <p className="chip mb-6">04 — Contacto</p>
+          <SplitReveal
+            type="words"
+            className="font-display text-[clamp(2.6rem,7vw,6rem)] leading-[0.92] font-bold tracking-tight"
+          >
+            ¿Tienes un proyecto en mente?
+          </SplitReveal>
+          <p className="mt-6 max-w-lg text-lg text-muted">
+            Escríbeme por WhatsApp para una conversación directa, o copia mi correo. Respondo rápido.
+          </p>
+          <div className="mt-10 flex flex-wrap items-center gap-6">
+            <Magnetic strength={0.4}>
+              <a
+                href={profile.whatsapp}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-cursor="Hola"
+                className="group relative grid size-36 place-items-center overflow-hidden rounded-full bg-fg text-bg sm:size-44"
+              >
+                <span className="absolute inset-0 scale-0 rounded-full bg-linear-to-br from-accent via-accent-2 to-accent-3 transition-transform duration-500 ease-out group-hover:scale-100" />
+                <span className="relative flex flex-col items-center gap-1 font-medium">
+                  <FaWhatsapp className="text-3xl" />
+                  Escríbeme
+                </span>
+              </a>
+            </Magnetic>
+            <CopyEmail />
+          </div>
+        </div>
+
+        <ul className="divide-y divide-line border-y border-line">
+          {channels.map(({ label, detail, href, Icon }, i) => (
+            <motion.li
+              key={label}
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ type: 'spring', stiffness: 120, damping: 20, delay: i * 0.07 }}
+            >
+              <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center gap-5 py-6 transition-[padding] duration-300 hover:pl-3"
+              >
+                <span className="grid size-12 place-items-center rounded-2xl border border-line bg-surface text-xl transition-colors group-hover:border-accent group-hover:text-accent">
+                  <Icon />
+                </span>
+                <span className="flex-1">
+                  <span className="block font-display text-2xl font-semibold tracking-tight">{label}</span>
+                  <span className="text-sm text-muted">{detail}</span>
+                </span>
+                <FiArrowUpRight className="text-2xl text-muted transition-all duration-300 group-hover:rotate-45 group-hover:text-fg" />
+              </a>
+            </motion.li>
+          ))}
+        </ul>
       </div>
     </section>
-  );
-};
-
-export default Contact; 
+  )
+}
