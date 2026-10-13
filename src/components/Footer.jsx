@@ -62,7 +62,7 @@ export default function Footer() {
         whileInView={{ y: '0%', opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-        className="pointer-events-none -mb-[0.2em] text-center font-display text-[14vw] leading-none font-bold tracking-[-0.05em] whitespace-nowrap text-transparent select-none [-webkit-text-stroke:1px_var(--line-strong)]"
+        className="pointer-events-none -mb-[0.2em] text-center font-display text-[12.5vw] leading-none font-bold tracking-[-0.05em] whitespace-nowrap text-transparent select-none [-webkit-text-stroke:1px_var(--line-strong)]"
       >
         Christian Mora
       </motion.p>

@@ -56,7 +56,7 @@ function Card({ project }) {
       >
         <Cover project={project} />
       </a>
-      <div className="flex flex-1 flex-col p-6">
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
         <div className="flex items-start justify-between gap-3">
           <h3 className="font-display text-xl font-semibold tracking-tight">{project.name}</h3>
           <span className="flex shrink-0 items-center gap-2 font-mono text-xs text-muted">
@@ -113,13 +113,13 @@ export default function MoreProjects() {
         <div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
           <div>
             <p className="chip mb-6">02 — Laboratorio</p>
-            <SplitReveal className="max-w-3xl font-display text-[clamp(2.2rem,5vw,4.2rem)] leading-[0.95] font-bold tracking-tight">
+            <SplitReveal className="max-w-3xl font-display text-[clamp(1.9rem,8.5vw,4.2rem)] leading-[0.95] font-bold tracking-tight">
               Más proyectos, experimentos y clientes.
             </SplitReveal>
           </div>
 
           <LayoutGroup id="filters">
-            <div className="flex flex-wrap gap-1.5 rounded-full border border-line bg-surface/60 p-1.5 backdrop-blur" role="tablist">
+            <div className="flex flex-wrap gap-1 rounded-2xl border border-line bg-surface/60 p-1.5 backdrop-blur sm:gap-1.5 sm:rounded-full" role="tablist">
               {categories.map((c) => (
                 <button
                   key={c}
@@ -130,7 +130,7 @@ export default function MoreProjects() {
                     setFilter(c)
                     setExpanded(false)
                   }}
-                  className={`relative rounded-full px-4 py-2 text-sm transition-colors ${filter === c ? 'text-bg' : 'text-muted hover:text-fg'}`}
+                  className={`relative rounded-full px-3 py-2 text-[13px] transition-colors sm:px-4 sm:text-sm ${filter === c ? 'text-bg' : 'text-muted hover:text-fg'}`}
                 >
                   {filter === c && (
                     <motion.span

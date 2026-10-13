@@ -29,9 +29,9 @@ function CopyEmail() {
     <button
       type="button"
       onClick={copy}
-      className="group inline-flex max-w-full items-center gap-3 rounded-full border border-line-strong bg-surface/60 py-2 pr-2 pl-5 backdrop-blur transition-colors hover:border-fg"
+      className="group inline-flex max-w-full min-w-0 items-center gap-2 rounded-full border border-line-strong bg-surface/60 py-2 pr-2 pl-4 backdrop-blur transition-colors hover:border-fg sm:gap-3 sm:pl-5"
     >
-      <span className="truncate font-mono text-sm sm:text-base">{profile.email}</span>
+      <span className="min-w-0 truncate font-mono text-[12px] min-[380px]:text-sm sm:text-base">{profile.email}</span>
       <span className="relative grid size-9 shrink-0 place-items-center overflow-hidden rounded-full bg-fg text-bg">
         <AnimatePresence mode="popLayout" initial={false}>
           <motion.span
@@ -57,33 +57,33 @@ export default function Contact() {
     <section id="contacto" data-nav="contacto" className="relative overflow-hidden pt-10 pb-28 sm:pb-36">
       <VelocityMarquee baseVelocity={-1.6} className="border-y border-line py-6">
         {['Hablemos', 'Let’s build', 'Construyamos', 'Say hi'].map((w) => (
-          <span key={w} className="flex items-center gap-8 px-8 font-display text-5xl font-bold tracking-tight sm:text-7xl">
+          <span key={w} className="flex items-center gap-6 px-6 font-display text-4xl font-bold tracking-tight sm:gap-8 sm:px-8 sm:text-7xl">
             {w}
             <span className="text-gradient text-4xl sm:text-5xl">✦</span>
           </span>
         ))}
       </VelocityMarquee>
 
-      <div className="container-x mt-24 grid gap-16 lg:grid-cols-[1.2fr_1fr] lg:items-center">
-        <div>
+      <div className="container-x mt-24 grid grid-cols-1 gap-16 lg:grid-cols-[1.2fr_1fr] lg:items-center">
+        <div className="min-w-0">
           <p className="chip mb-6">04 — Contacto</p>
           <SplitReveal
             type="words"
-            className="font-display text-[clamp(2.6rem,7vw,6rem)] leading-[0.92] font-bold tracking-tight"
+            className="font-display text-[clamp(2.1rem,10vw,6rem)] leading-[0.92] font-bold tracking-tight"
           >
             ¿Tienes un proyecto en mente?
           </SplitReveal>
           <p className="mt-6 max-w-lg text-lg text-muted">
             Escríbeme por WhatsApp para una conversación directa, o copia mi correo. Respondo rápido.
           </p>
-          <div className="mt-10 flex flex-wrap items-center gap-6">
+          <div className="mt-10 flex flex-wrap items-center gap-6 [&>*]:max-w-full">
             <Magnetic strength={0.4}>
               <a
                 href={profile.whatsapp}
                 target="_blank"
                 rel="noopener noreferrer"
                 data-cursor="Hola"
-                className="group relative grid size-36 place-items-center overflow-hidden rounded-full bg-fg text-bg sm:size-44"
+                className="group relative grid size-32 place-items-center overflow-hidden rounded-full bg-fg text-bg sm:size-44"
               >
                 <span className="absolute inset-0 scale-0 rounded-full bg-linear-to-br from-accent via-accent-2 to-accent-3 transition-transform duration-500 ease-out group-hover:scale-100" />
                 <span className="relative flex flex-col items-center gap-1 font-medium">
@@ -96,7 +96,7 @@ export default function Contact() {
           </div>
         </div>
 
-        <ul className="divide-y divide-line border-y border-line">
+        <ul className="min-w-0 divide-y divide-line border-y border-line">
           {channels.map(({ label, detail, href, Icon }, i) => (
             <motion.li
               key={label}
@@ -109,13 +109,13 @@ export default function Contact() {
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex items-center gap-5 py-6 transition-[padding] duration-300 hover:pl-3"
+                className="group flex items-center gap-4 py-5 transition-[padding] duration-300 hover:pl-3 sm:gap-5 sm:py-6"
               >
                 <span className="grid size-12 place-items-center rounded-2xl border border-line bg-surface text-xl transition-colors group-hover:border-accent group-hover:text-accent">
                   <Icon />
                 </span>
-                <span className="flex-1">
-                  <span className="block font-display text-2xl font-semibold tracking-tight">{label}</span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-display text-xl font-semibold tracking-tight sm:text-2xl">{label}</span>
                   <span className="text-sm text-muted">{detail}</span>
                 </span>
                 <FiArrowUpRight className="text-2xl text-muted transition-all duration-300 group-hover:rotate-45 group-hover:text-fg" />

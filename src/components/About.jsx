@@ -100,30 +100,30 @@ export default function About() {
     <section ref={root} id="sobre-mi" data-nav="sobre-mi" className="relative py-28 sm:py-36">
       <div className="container-x">
         <p className="chip mb-8">03 — Sobre mí</p>
-        <p className="about-lead max-w-5xl font-display text-[clamp(1.6rem,3.6vw,3rem)] leading-[1.15] font-medium tracking-tight">
+        <p className="about-lead max-w-5xl font-display text-[clamp(1.35rem,5.6vw,3rem)] leading-[1.15] font-medium tracking-tight">
           {profile.bio[0]}
         </p>
 
-        <div className="mt-20 grid gap-4 md:grid-cols-6 lg:grid-cols-12">
+        <div className="mt-16 grid grid-cols-2 gap-3 sm:mt-20 sm:gap-4 md:grid-cols-6 lg:grid-cols-12">
           {profile.stats.map((s, i) => (
             <motion.div
               key={s.label}
               {...reveal}
               transition={{ type: 'spring', stiffness: 120, damping: 20, delay: i * 0.06 }}
-              className="md:col-span-3"
+              className="col-span-1 md:col-span-3"
             >
-              <SpotlightCard className="h-full p-6 sm:p-7">
+              <SpotlightCard className="h-full p-5 sm:p-7">
                 <CountUp
                   value={s.value}
                   suffix={s.suffix}
-                  className="text-gradient font-display text-5xl font-bold tracking-tight sm:text-6xl"
+                  className="text-gradient font-display text-4xl font-bold tracking-tight sm:text-6xl"
                 />
-                <p className="mt-2 text-sm text-muted">{s.label}</p>
+                <p className="mt-2 text-xs text-muted sm:text-sm">{s.label}</p>
               </SpotlightCard>
             </motion.div>
           ))}
 
-          <motion.div {...reveal} transition={{ type: 'spring', stiffness: 120, damping: 20 }} className="md:col-span-4 lg:col-span-8">
+          <motion.div {...reveal} transition={{ type: 'spring', stiffness: 120, damping: 20 }} className="col-span-2 md:col-span-4 lg:col-span-8">
             <SpotlightCard className="h-full p-7 sm:p-9">
               <p className="chip">
                 <span className="relative flex size-2">
@@ -132,11 +132,11 @@ export default function About() {
                 </span>
                 Ahora mismo
               </p>
-              <p className="mt-6 text-lg leading-relaxed text-fg/90 sm:text-xl">{profile.bio[1]}</p>
+              <p className="mt-6 text-base leading-relaxed text-fg/90 sm:text-xl">{profile.bio[1]}</p>
             </SpotlightCard>
           </motion.div>
 
-          <motion.div {...reveal} transition={{ type: 'spring', stiffness: 120, damping: 20, delay: 0.08 }} className="md:col-span-2 lg:col-span-4">
+          <motion.div {...reveal} transition={{ type: 'spring', stiffness: 120, damping: 20, delay: 0.08 }} className="col-span-2 lg:col-span-4">
             <SpotlightCard className="flex h-full flex-col justify-between gap-8 p-7">
               <div className="flex items-center gap-2 text-muted">
                 <FiMapPin /> {profile.location}
@@ -158,7 +158,7 @@ export default function About() {
                 key={g.title}
                 {...reveal}
                 transition={{ type: 'spring', stiffness: 120, damping: 20, delay: i * 0.06 }}
-                className="md:col-span-3 lg:col-span-6"
+                className="col-span-2 md:col-span-3 lg:col-span-6"
               >
                 <SpotlightCard className="h-full p-7">
                   <div className="flex items-center gap-3">

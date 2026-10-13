@@ -138,8 +138,8 @@ export default function Hero({ ready }) {
       <div className="dot-grid absolute inset-0 -z-10 opacity-50 [mask-image:radial-gradient(ellipse_70%_60%_at_50%_40%,black,transparent)]" />
       <div className="absolute inset-x-0 bottom-0 -z-10 h-48 bg-linear-to-b from-transparent to-bg" />
 
-      <div className="container-x grid min-h-[100svh] items-center gap-10 pt-28 pb-24 lg:grid-cols-[1.15fr_1fr]">
-        <motion.div style={{ y: contentY, opacity: contentOpacity }} className="relative z-10">
+      <div className="container-x grid min-h-[100svh] grid-cols-1 items-center gap-10 pt-28 pb-24 lg:grid-cols-[1.15fr_1fr]">
+        <motion.div style={{ y: contentY, opacity: contentOpacity }} className="relative z-10 min-w-0">
           <div className="hero-fade mb-7 flex flex-wrap items-center gap-2">
             <span className="chip">
               <span className="relative flex size-2">
@@ -153,13 +153,13 @@ export default function Hero({ ready }) {
             </span>
           </div>
 
-          <h1 className="hero-name font-display text-[clamp(3.4rem,12vw,6.2rem)] xl:text-[8.2rem] leading-[0.86] font-bold tracking-[-0.04em]">
+          <h1 className="hero-name font-display text-[clamp(2.6rem,15vw,6.2rem)] xl:text-[8.2rem] leading-[0.86] font-bold tracking-[-0.04em]">
             Christian
             <br />
             Mora<span className="text-accent">.</span>
           </h1>
 
-          <p className="hero-fade mt-8 font-display text-[clamp(1.5rem,3.4vw,2.4rem)] leading-tight font-medium tracking-tight">
+          <p className="hero-fade mt-6 font-display text-[clamp(1.3rem,5.6vw,2.4rem)] sm:mt-8 leading-tight font-medium tracking-tight">
             <span className="text-muted">Construyo </span>
             <span className="hero-craft text-gradient">{profile.crafts[0]}</span>
           </p>
@@ -175,7 +175,7 @@ export default function Hero({ ready }) {
                 type="button"
                 onClick={() => scrollTo('proyectos')}
                 data-cursor="Ver"
-                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-fg px-7 py-4 font-medium text-bg"
+                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-fg px-6 py-3.5 font-medium text-bg sm:px-7 sm:py-4"
               >
                 <span className="absolute inset-0 -translate-x-full bg-linear-to-r from-accent via-accent-2 to-accent-3 transition-transform duration-500 ease-out group-hover:translate-x-0" />
                 <span className="relative">Ver proyectos</span>
@@ -187,7 +187,7 @@ export default function Hero({ ready }) {
                 href={profile.whatsapp}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group inline-flex items-center gap-2 rounded-full border border-line-strong bg-surface/40 px-7 py-4 font-medium backdrop-blur transition-colors hover:border-fg"
+                className="group inline-flex items-center gap-2 rounded-full border border-line-strong bg-surface/40 px-6 py-3.5 font-medium backdrop-blur transition-colors hover:border-fg sm:px-7 sm:py-4"
               >
                 Hablemos
                 <FiArrowUpRight className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />

@@ -88,8 +88,8 @@ function Panel({ project, index }) {
         0{index + 1}
       </span>
 
-      <div className="container-x relative grid items-center gap-10 lg:grid-cols-12 lg:gap-12">
-        <div className="lg:col-span-5">
+      <div className="container-x relative grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-12">
+        <div className="min-w-0 lg:col-span-5">
           <div className="feat-reveal flex flex-wrap items-center gap-3 font-mono text-xs text-muted">
             <span className="text-fg">0{index + 1}</span>
             <span className="h-px w-8 bg-line-strong" />
@@ -97,8 +97,8 @@ function Panel({ project, index }) {
             <span>·</span>
             <span>{project.year}</span>
           </div>
-          <h3 className="feat-reveal mt-5 font-display text-5xl font-bold tracking-tight xl:text-6xl">{project.name}</h3>
-          <p className="feat-reveal mt-4 font-display text-xl leading-snug text-fg/90 xl:text-2xl">{project.tagline}</p>
+          <h3 className="feat-reveal mt-5 font-display text-[clamp(2rem,10vw,3rem)] leading-[1.02] font-bold tracking-tight [overflow-wrap:anywhere] xl:text-6xl">{project.name}</h3>
+          <p className="feat-reveal mt-4 font-display text-lg leading-snug text-fg/90 sm:text-xl xl:text-2xl">{project.tagline}</p>
           <p className="feat-reveal mt-4 leading-relaxed text-muted">{project.description}</p>
           <ul className="feat-reveal mt-6 flex flex-wrap gap-2">
             {project.highlights.map((h) => (
@@ -118,10 +118,10 @@ function Panel({ project, index }) {
           </div>
         </div>
 
-        <div className="relative lg:col-span-7">
+        <div className="relative min-w-0 lg:col-span-7">
           <div
             aria-hidden
-            className="absolute -inset-10 -z-10 rounded-full opacity-50 blur-3xl"
+            className="absolute -inset-3 -z-10 sm:-inset-10 rounded-full opacity-50 blur-3xl"
             style={{ background: `radial-gradient(closest-side, ${a}, transparent), radial-gradient(closest-side at 80% 80%, ${b}, transparent)` }}
           />
           <div className="feat-visual">
@@ -226,13 +226,13 @@ export default function Featured() {
   )
 
   return (
-    <section ref={root} id="proyectos" data-nav="proyectos" className="relative">
+    <section ref={root} id="proyectos" data-nav="proyectos" className="relative overflow-x-clip">
       <div className="container-x pt-28 pb-14 sm:pt-36">
         <p className="chip mb-6">01 — Proyectos destacados</p>
-        <SplitReveal className="max-w-4xl font-display text-[clamp(2.4rem,6vw,5rem)] leading-[0.95] font-bold tracking-tight">
+        <SplitReveal className="max-w-4xl font-display text-[clamp(2rem,9vw,5rem)] leading-[0.95] font-bold tracking-tight">
           Lo que más me enorgullece haber construido.
         </SplitReveal>
-        <p className="mt-6 max-w-2xl text-lg text-muted">
+        <p className="mt-6 max-w-2xl text-base text-muted sm:text-lg">
           Productos reales: una app con IA que lee recibos de WhatsApp, herramientas de escritorio que procesan datos
           pesados en local y un e-commerce en producción.
         </p>
