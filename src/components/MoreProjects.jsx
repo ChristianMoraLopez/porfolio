@@ -17,15 +17,17 @@ import SpotlightCard from './ui/SpotlightCard'
 import SplitReveal from './ui/SplitReveal'
 import { categories, projects } from '../data/projects'
 import { profile } from '../data/profile'
+import { useI18n } from '../i18n/I18nProvider'
 
 const icons = { scan: FiCrosshair, search: FiSearch, server: FiServer, database: FiDatabase, zap: FiZap, code: FiCode, phone: FiSmartphone, bag: FiShoppingBag }
 
 function Cover({ project }) {
+  const { t, l } = useI18n()
   if (project.image)
     return (
       <img
         src={project.image}
-        alt={`Captura de ${project.name}`}
+        alt={`${t.featured.screenshot} ${l(project.name)}`}
         loading="lazy"
         className="h-full w-full object-cover object-top transition-transform duration-700 ease-out group-hover/spot:scale-105"
       />
@@ -35,12 +37,14 @@ function Cover({ project }) {
     <div className="dot-grid relative grid h-full w-full place-items-center bg-bg-soft">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,var(--glow),transparent_60%)]" />
       <Icon className="relative text-5xl text-accent transition-transform duration-700 group-hover/spot:scale-110 group-hover/spot:rotate-6" />
-      <span className="absolute bottom-3 left-4 font-mono text-[10px] text-muted">{project.stack.join(' · ')}</span>
+      <span className="absolute bottom-3 left-4 font-mono text-[10px] text-muted">{project.stack.map(l).join(' · ')}</span>
     </div>
   )
 }
 
 function Card({ project }) {
+  const { t, l } = useI18n()
+  const name = l(project.name)
   const href = project.demo || project.repo
   return (
     <SpotlightCard className="flex h-full flex-col rounded-3xl">
@@ -48,27 +52,27 @@ function Card({ project }) {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        data-cursor={href ? (project.demo ? 'Abrir' : 'Código') : undefined}
+        data-cursor={href ? (project.demo ? t.featured.cursorOpen : t.featured.cursorCode) : undefined}
         onClick={(e) => !href && e.preventDefault()}
         className="block aspect-[16/10] overflow-hidden rounded-t-3xl border-b border-line"
         tabIndex={href ? 0 : -1}
-        aria-label={href ? `Abrir ${project.name}` : undefined}
+        aria-label={href ? `${t.more.open} ${name}` : undefined}
       >
         <Cover project={project} />
       </a>
       <div className="flex flex-1 flex-col p-5 sm:p-6">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="font-display text-xl font-semibold tracking-tight">{project.name}</h3>
+          <h3 className="font-display text-xl font-semibold tracking-tight">{name}</h3>
           <span className="flex shrink-0 items-center gap-2 font-mono text-xs text-muted">
             {project.badge && (
-              <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[10px] text-accent">{project.badge}</span>
+              <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[10px] text-accent">{l(project.badge)}</span>
             )}
             {project.year}
           </span>
         </div>
-        <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">{project.description}</p>
+        <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">{l(project.description)}</p>
         <div className="mt-4 flex flex-wrap gap-1.5">
-          {project.stack.map((s) => (
+          {project.stack.map(l).map((s) => (
             <span key={s} className="rounded-md bg-bg-soft px-2 py-1 font-mono text-[10px] text-muted">
               {s}
             </span>
@@ -77,18 +81,18 @@ function Card({ project }) {
         <div className="mt-5 flex items-center gap-4 text-sm">
           {project.demo && (
             <a href={project.demo} target="_blank" rel="noopener noreferrer" className="group inline-flex items-center gap-1 font-medium">
-              En vivo
+              {t.more.live}
               <FiArrowUpRight className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </a>
           )}
           {project.repo && (
             <a href={project.repo} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-muted hover:text-fg">
-              <FiGithub /> Código
+              <FiGithub /> {t.more.code}
             </a>
           )}
           {project.private && (
             <span className="inline-flex items-center gap-1.5 text-muted">
-              <FiLock /> Privado
+              <FiLock /> {t.more.private}
             </span>
           )}
         </div>
@@ -98,11 +102,12 @@ function Card({ project }) {
 }
 
 export default function MoreProjects() {
-  const [filter, setFilter] = useState('Todos')
+  const { t, l } = useI18n()
+  const [filter, setFilter] = useState('all')
   const [expanded, setExpanded] = useState(false)
 
   const list = useMemo(
-    () => (filter === 'Todos' ? projects : projects.filter((p) => p.cats.includes(filter))),
+    () => (filter === 'all' ? projects : projects.filter((p) => p.cats.includes(filter))),
     [filter],
   )
   const visible = expanded ? list : list.slice(0, 6)
@@ -112,9 +117,9 @@ export default function MoreProjects() {
       <div className="container-x">
         <div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
           <div>
-            <p className="chip mb-6">02 — Laboratorio</p>
+            <p className="chip mb-6">{t.more.chip}</p>
             <SplitReveal className="max-w-3xl font-display text-[clamp(1.9rem,8.5vw,4.2rem)] leading-[0.95] font-bold tracking-tight">
-              Más proyectos, experimentos y clientes.
+              {t.more.title}
             </SplitReveal>
           </div>
 
@@ -122,24 +127,24 @@ export default function MoreProjects() {
             <div className="flex flex-wrap gap-1 rounded-2xl border border-line bg-surface/60 p-1.5 backdrop-blur sm:gap-1.5 sm:rounded-full" role="tablist">
               {categories.map((c) => (
                 <button
-                  key={c}
+                  key={c.id}
                   type="button"
                   role="tab"
-                  aria-selected={filter === c}
+                  aria-selected={filter === c.id}
                   onClick={() => {
-                    setFilter(c)
+                    setFilter(c.id)
                     setExpanded(false)
                   }}
-                  className={`relative rounded-full px-3 py-2 text-[13px] transition-colors sm:px-4 sm:text-sm ${filter === c ? 'text-bg' : 'text-muted hover:text-fg'}`}
+                  className={`relative rounded-full px-3 py-2 text-[13px] transition-colors sm:px-4 sm:text-sm ${filter === c.id ? 'text-bg' : 'text-muted hover:text-fg'}`}
                 >
-                  {filter === c && (
+                  {filter === c.id && (
                     <motion.span
                       layoutId="filter-pill"
                       className="absolute inset-0 -z-0 rounded-full bg-fg"
                       transition={{ type: 'spring', stiffness: 400, damping: 32 }}
                     />
                   )}
-                  <span className="relative">{c}</span>
+                  <span className="relative">{l(c)}</span>
                 </button>
               ))}
             </div>
@@ -151,7 +156,7 @@ export default function MoreProjects() {
             {visible.map((p, i) => (
               <motion.li
                 layout
-                key={p.name}
+                key={p.id}
                 initial={{ opacity: 0, y: 40, scale: 0.96 }}
                 whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true, margin: '-60px' }}
@@ -171,7 +176,7 @@ export default function MoreProjects() {
               onClick={() => setExpanded((e) => !e)}
               className="rounded-full border border-line-strong px-6 py-3 text-sm font-medium transition-colors hover:border-fg"
             >
-              {expanded ? 'Ver menos' : `Ver los ${list.length} proyectos`}
+              {expanded ? t.more.seeLess : t.more.seeAll(list.length)}
             </button>
           )}
           <a
@@ -180,7 +185,7 @@ export default function MoreProjects() {
             rel="noopener noreferrer"
             className="group inline-flex items-center gap-2 text-sm text-muted hover:text-fg"
           >
-            <FiGithub /> Todo mi GitHub
+            <FiGithub /> {t.more.github}
             <FiArrowUpRight className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </a>
         </div>

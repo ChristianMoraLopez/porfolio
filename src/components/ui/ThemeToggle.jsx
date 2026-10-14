@@ -1,12 +1,14 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { FiMoon, FiSun } from 'react-icons/fi'
+import { useI18n } from '../../i18n/I18nProvider'
 
 export default function ThemeToggle({ dark, onToggle, className = '' }) {
+  const { t } = useI18n()
   return (
     <button
       type="button"
       onClick={onToggle}
-      aria-label={dark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+      aria-label={dark ? t.theme.toLight : t.theme.toDark}
       className={`relative grid size-10 place-items-center overflow-hidden rounded-full border border-line bg-surface/60 text-fg transition-colors hover:border-line-strong ${className}`}
     >
       <AnimatePresence mode="popLayout" initial={false}>

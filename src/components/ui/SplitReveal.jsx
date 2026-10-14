@@ -2,7 +2,9 @@ import { useRef } from 'react'
 import { gsap, SplitText, useGSAP, prefersReducedMotion } from '../../lib/gsap'
 
 // Revela un texto por líneas o palabras al entrar en pantalla (GSAP SplitText
-// con máscara, estilo React Bits "SplitText").
+// con máscara, estilo React Bits "SplitText"). SplitText reemplaza los nodos de
+// texto, así que si el texto cambia (p. ej. al cambiar de idioma) el elemento
+// se vuelve a montar con otra key en vez de dejar que React lo parchee.
 export default function SplitReveal({
   as: Tag = 'h2',
   children,
@@ -13,6 +15,7 @@ export default function SplitReveal({
   start = 'top 85%',
 }) {
   const ref = useRef(null)
+  const text = typeof children === 'string' ? children : ''
 
   useGSAP(
     () => {
@@ -37,11 +40,11 @@ export default function SplitReveal({
         },
       })
     },
-    { scope: ref },
+    { scope: ref, dependencies: [text], revertOnUpdate: true },
   )
 
   return (
-    <Tag ref={ref} className={className}>
+    <Tag key={text} ref={ref} className={className}>
       {children}
     </Tag>
   )

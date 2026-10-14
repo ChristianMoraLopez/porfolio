@@ -6,15 +6,17 @@ import Magnetic from './ui/Magnetic'
 import SplitReveal from './ui/SplitReveal'
 import VelocityMarquee from './ui/VelocityMarquee'
 import { profile } from '../data/profile'
+import { useI18n } from '../i18n/I18nProvider'
 
 const channels = [
-  { label: 'WhatsApp', detail: 'Respuesta rápida', href: profile.whatsapp, Icon: FaWhatsapp },
-  { label: 'LinkedIn', detail: 'Perfil profesional', href: profile.linkedin, Icon: FiLinkedin },
-  { label: 'GitHub', detail: '60+ repositorios', href: profile.github, Icon: FiGithub },
-  { label: 'Buy me a coffee', detail: 'Si algo te sirvió', href: profile.coffee, Icon: FiCoffee },
+  { id: 'whatsapp', label: 'WhatsApp', href: profile.whatsapp, Icon: FaWhatsapp },
+  { id: 'linkedin', label: 'LinkedIn', href: profile.linkedin, Icon: FiLinkedin },
+  { id: 'github', label: 'GitHub', href: profile.github, Icon: FiGithub },
+  { id: 'coffee', label: 'Buy me a coffee', href: profile.coffee, Icon: FiCoffee },
 ]
 
 function CopyEmail() {
+  const { t } = useI18n()
   const [copied, setCopied] = useState(false)
   const copy = async () => {
     try {
@@ -46,17 +48,18 @@ function CopyEmail() {
         </AnimatePresence>
       </span>
       <span className="sr-only" aria-live="polite">
-        {copied ? 'Correo copiado' : ''}
+        {copied ? t.contact.copied : ''}
       </span>
     </button>
   )
 }
 
 export default function Contact() {
+  const { t } = useI18n()
   return (
     <section id="contacto" data-nav="contacto" className="relative overflow-hidden pt-10 pb-28 sm:pb-36">
       <VelocityMarquee baseVelocity={-1.6} className="border-y border-line py-6">
-        {['Hablemos', 'Let’s build', 'Construyamos', 'Say hi'].map((w) => (
+        {t.contact.marquee.map((w) => (
           <span key={w} className="flex items-center gap-6 px-6 font-display text-4xl font-bold tracking-tight sm:gap-8 sm:px-8 sm:text-7xl">
             {w}
             <span className="text-gradient text-4xl sm:text-5xl">✦</span>
@@ -66,29 +69,27 @@ export default function Contact() {
 
       <div className="container-x mt-24 grid grid-cols-1 gap-16 lg:grid-cols-[1.2fr_1fr] lg:items-center">
         <div className="min-w-0">
-          <p className="chip mb-6">04 — Contacto</p>
+          <p className="chip mb-6">{t.contact.chip}</p>
           <SplitReveal
             type="words"
             className="font-display text-[clamp(2.1rem,10vw,6rem)] leading-[0.92] font-bold tracking-tight"
           >
-            ¿Tienes un proyecto en mente?
+            {t.contact.title}
           </SplitReveal>
-          <p className="mt-6 max-w-lg text-lg text-muted">
-            Escríbeme por WhatsApp para una conversación directa, o copia mi correo. Respondo rápido.
-          </p>
+          <p className="mt-6 max-w-lg text-lg text-muted">{t.contact.lead}</p>
           <div className="mt-10 flex flex-wrap items-center gap-6 [&>*]:max-w-full">
             <Magnetic strength={0.4}>
               <a
                 href={profile.whatsapp}
                 target="_blank"
                 rel="noopener noreferrer"
-                data-cursor="Hola"
+                data-cursor={t.contact.cursor}
                 className="group relative grid size-32 place-items-center overflow-hidden rounded-full bg-fg text-bg sm:size-44"
               >
                 <span className="absolute inset-0 scale-0 rounded-full bg-linear-to-br from-accent via-accent-2 to-accent-3 transition-transform duration-500 ease-out group-hover:scale-100" />
                 <span className="relative flex flex-col items-center gap-1 font-medium">
                   <FaWhatsapp className="text-3xl" />
-                  Escríbeme
+                  {t.contact.write}
                 </span>
               </a>
             </Magnetic>
@@ -97,9 +98,9 @@ export default function Contact() {
         </div>
 
         <ul className="min-w-0 divide-y divide-line border-y border-line">
-          {channels.map(({ label, detail, href, Icon }, i) => (
+          {channels.map(({ id, label, href, Icon }, i) => (
             <motion.li
-              key={label}
+              key={id}
               initial={{ opacity: 0, x: 40 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: '-60px' }}
@@ -116,7 +117,7 @@ export default function Contact() {
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block font-display text-xl font-semibold tracking-tight sm:text-2xl">{label}</span>
-                  <span className="text-sm text-muted">{detail}</span>
+                  <span className="text-sm text-muted">{t.contact.channels[id]}</span>
                 </span>
                 <FiArrowUpRight className="text-2xl text-muted transition-all duration-300 group-hover:rotate-45 group-hover:text-fg" />
               </a>

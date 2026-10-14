@@ -2,9 +2,11 @@ import { useState } from 'react'
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'motion/react'
 import { FaWhatsapp } from 'react-icons/fa'
 import { profile } from '../data/profile'
+import { useI18n } from '../i18n/I18nProvider'
 
 // Botón flotante de WhatsApp: aparece después del hero.
 export default function FloatingWhatsApp() {
+  const { t } = useI18n()
   const { scrollY } = useScroll()
   const [show, setShow] = useState(false)
   useMotionValueEvent(scrollY, 'change', (v) => setShow(v > window.innerHeight * 0.8))
@@ -16,7 +18,7 @@ export default function FloatingWhatsApp() {
           href={profile.whatsapp}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="Escribir por WhatsApp"
+          aria-label={t.whatsapp}
           initial={{ scale: 0, rotate: -90 }}
           animate={{ scale: 1, rotate: 0 }}
           exit={{ scale: 0, rotate: 90 }}

@@ -7,31 +7,33 @@ import { BrowserFrame, DesktopFrame } from './ui/Frames'
 import { KeplerMock, TelescopeMock } from './ProjectMocks'
 import { gsap, useGSAP } from '../lib/gsap'
 import { featured } from '../data/projects'
+import { useI18n } from '../i18n/I18nProvider'
 
 function Visual({ project }) {
+  const { t, l } = useI18n()
   if (project.visual === 'telescope')
     return (
-      <DesktopFrame title="Telescope 2.0 — explorador de datos">
+      <DesktopFrame title={l({ es: 'Telescope 2.0 — explorador de datos', en: 'Telescope 2.0 — data explorer' })}>
         <TelescopeMock />
       </DesktopFrame>
     )
   if (project.visual === 'kepler')
     return (
-      <DesktopFrame title="Kepler — catálogo histórico">
+      <DesktopFrame title={l({ es: 'Kepler — catálogo histórico', en: 'Kepler — historical catalog' })}>
         <KeplerMock />
       </DesktopFrame>
     )
   if (project.image.endsWith('.svg'))
     return (
       <DesktopFrame title={`${project.name} — Windows`}>
-        <img src={project.image} alt={`Vista previa animada de ${project.name}`} className="h-full w-full object-cover" />
+        <img src={project.image} alt={`${t.featured.preview} ${project.name}`} className="h-full w-full object-cover" />
       </DesktopFrame>
     )
   return (
     <BrowserFrame url={project.url}>
       <img
         src={project.image}
-        alt={`Captura de ${project.name}`}
+        alt={`${t.featured.screenshot} ${project.name}`}
         loading="lazy"
         className="h-full w-full object-cover object-top transition-transform duration-[1.2s] ease-out group-hover/visual:scale-[1.04]"
       />
@@ -40,19 +42,20 @@ function Visual({ project }) {
 }
 
 function ProjectLinks({ project }) {
+  const { t } = useI18n()
   const base =
     'group inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-medium transition-all duration-300'
   return (
     <div className="flex flex-wrap items-center gap-2.5">
       {project.demo && (
         <a href={project.demo} target="_blank" rel="noopener noreferrer" className={`${base} bg-fg text-bg hover:scale-[1.03]`}>
-          Ver en vivo
+          {t.featured.live}
           <FiArrowUpRight className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </a>
       )}
       {project.release && (
         <a href={project.release} target="_blank" rel="noopener noreferrer" className={`${base} bg-fg text-bg hover:scale-[1.03]`}>
-          Descargar release
+          {t.featured.release}
           <FiDownload className="transition-transform group-hover:translate-y-0.5" />
         </a>
       )}
@@ -64,13 +67,13 @@ function ProjectLinks({ project }) {
           className={`${base} border border-line-strong hover:border-fg`}
         >
           <FiGithub />
-          Código
+          {t.featured.code}
         </a>
       )}
       {!project.repo && (
         <span className={`${base} border border-dashed border-line-strong text-muted`}>
           <FiLock />
-          Código privado
+          {t.featured.private}
         </span>
       )}
     </div>
@@ -78,6 +81,7 @@ function ProjectLinks({ project }) {
 }
 
 function Panel({ project, index }) {
+  const { t, l } = useI18n()
   const [a, b] = project.accent
   return (
     <article className="feat-panel relative flex w-full shrink-0 items-center lg:motion-safe:h-full lg:motion-safe:w-screen">
@@ -93,15 +97,15 @@ function Panel({ project, index }) {
           <div className="feat-reveal flex flex-wrap items-center gap-3 font-mono text-xs text-muted">
             <span className="text-fg">0{index + 1}</span>
             <span className="h-px w-8 bg-line-strong" />
-            <span>{project.kind}</span>
+            <span>{l(project.kind)}</span>
             <span>·</span>
             <span>{project.year}</span>
           </div>
           <h3 className="feat-reveal mt-5 font-display text-[clamp(2rem,10vw,3rem)] leading-[1.02] font-bold tracking-tight [overflow-wrap:anywhere] xl:text-6xl">{project.name}</h3>
-          <p className="feat-reveal mt-4 font-display text-lg leading-snug text-fg/90 sm:text-xl xl:text-2xl">{project.tagline}</p>
-          <p className="feat-reveal mt-4 leading-relaxed text-muted">{project.description}</p>
+          <p className="feat-reveal mt-4 font-display text-lg leading-snug text-fg/90 sm:text-xl xl:text-2xl">{l(project.tagline)}</p>
+          <p className="feat-reveal mt-4 leading-relaxed text-muted">{l(project.description)}</p>
           <ul className="feat-reveal mt-6 flex flex-wrap gap-2">
-            {project.highlights.map((h) => (
+            {l(project.highlights).map((h) => (
               <li key={h} className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface/60 px-3 py-1.5 text-xs">
                 <FiCheck style={{ color: a }} />
                 {h}
@@ -129,7 +133,7 @@ function Panel({ project, index }) {
               href={project.demo || project.repo || undefined}
               target="_blank"
               rel="noopener noreferrer"
-              data-cursor={project.demo ? 'Abrir' : project.repo ? 'Código' : 'Privado'}
+              data-cursor={project.demo ? t.featured.cursorOpen : project.repo ? t.featured.cursorCode : t.featured.cursorPrivate}
               className="group/visual block"
               onClick={(e) => !(project.demo || project.repo) && e.preventDefault()}
             >
@@ -145,6 +149,7 @@ function Panel({ project, index }) {
 }
 
 export default function Featured() {
+  const { t } = useI18n()
   const root = useRef(null)
   const progress = useMotionValue(0)
   const [current, setCurrent] = useState(0)
@@ -228,14 +233,11 @@ export default function Featured() {
   return (
     <section ref={root} id="proyectos" data-nav="proyectos" className="relative overflow-x-clip">
       <div className="container-x pt-28 pb-14 sm:pt-36">
-        <p className="chip mb-6">01 — Proyectos destacados</p>
+        <p className="chip mb-6">{t.featured.chip}</p>
         <SplitReveal className="max-w-4xl font-display text-[clamp(2rem,9vw,5rem)] leading-[0.95] font-bold tracking-tight">
-          Lo que más me enorgullece haber construido.
+          {t.featured.title}
         </SplitReveal>
-        <p className="mt-6 max-w-2xl text-base text-muted sm:text-lg">
-          Productos reales: una app con IA que lee recibos de WhatsApp, herramientas de escritorio que procesan datos
-          pesados en local y un e-commerce en producción.
-        </p>
+        <p className="mt-6 max-w-2xl text-base text-muted sm:text-lg">{t.featured.lead}</p>
       </div>
 
       <div className="feat-pin relative lg:motion-safe:h-screen lg:motion-safe:overflow-hidden">

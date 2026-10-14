@@ -20,6 +20,7 @@ import {
   SiTypescript,
 } from 'react-icons/si'
 import VelocityMarquee from './ui/VelocityMarquee'
+import { useI18n } from '../i18n/I18nProvider'
 
 const rowA = [
   ['TypeScript', SiTypescript],
@@ -56,8 +57,9 @@ const Row = ({ items, outline }) =>
   ))
 
 export default function TechMarquee() {
+  const { t } = useI18n()
   return (
-    <section aria-label="Tecnologías" className="relative border-y border-line bg-bg-soft/60 py-8 sm:py-10">
+    <section aria-label={t.tech} className="relative border-y border-line bg-bg-soft/60 py-8 sm:py-10">
       <div className="space-y-3 font-display text-4xl font-semibold tracking-tight sm:text-6xl">
         <VelocityMarquee baseVelocity={-2.2}>
           <Row items={rowA} />

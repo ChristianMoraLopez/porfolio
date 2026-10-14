@@ -1,20 +1,22 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useInView } from 'motion/react'
 import { FiCheckCircle, FiSearch } from 'react-icons/fi'
+import { useI18n } from '../i18n/I18nProvider'
 
 // Mocks animados de las apps de escritorio privadas (no tienen demo pública).
 // Todo se dimensiona con unidades de contenedor (cqw) para escalar con la tarjeta.
 
-const queries = ['UPC 0004127102', 'Marca: Montaña', 'Geografía: Bogotá', 'Ventas > $10M']
+// Datos ficticios de ejemplo (marcas inventadas).
 const rows = [
-  ['0004127102', 'Café molido 500 g', 'Montaña', 'Bogotá', '12,4M'],
-  ['0007731220', 'Galletas avena', 'Trigal', 'Medellín', '8,1M'],
-  ['0001198433', 'Jugo mango 1 L', 'Frutal', 'Cali', '6,7M'],
-  ['0009984120', 'Arroz premium', 'Granero', 'Bogotá', '15,2M'],
-  ['0003310987', 'Detergente 2 kg', 'Brisa', 'Barranquilla', '9,9M'],
-  ['0005521476', 'Chocolate tableta', 'Cacaoterra', 'Bucaramanga', '4,3M'],
-  ['0002286610', 'Atún en lata', 'Marino', 'Bogotá', '7,8M'],
+  ['0004127102', { es: 'Café molido 500 g', en: 'Ground coffee 500 g' }, 'Montaña', 'Bogotá', 12.4],
+  ['0007731220', { es: 'Galletas avena', en: 'Oat cookies' }, 'Trigal', 'Medellín', 8.1],
+  ['0001198433', { es: 'Jugo mango 1 L', en: 'Mango juice 1 L' }, 'Frutal', 'Cali', 6.7],
+  ['0009984120', { es: 'Arroz premium', en: 'Premium rice' }, 'Granero', 'Bogotá', 15.2],
+  ['0003310987', { es: 'Detergente 2 kg', en: 'Detergent 2 kg' }, 'Brisa', 'Barranquilla', 9.9],
+  ['0005521476', { es: 'Chocolate tableta', en: 'Chocolate bar' }, 'Cacaoterra', 'Bucaramanga', 4.3],
+  ['0002286610', { es: 'Atún en lata', en: 'Canned tuna' }, 'Marino', 'Bogotá', 7.8],
 ]
+const millions = (v, locale) => `${v.toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}M`
 
 function useTyping(words, active) {
   const [text, setText] = useState('')
@@ -44,9 +46,10 @@ function useTyping(words, active) {
 }
 
 export function TelescopeMock() {
+  const { t, l, locale } = useI18n()
   const ref = useRef(null)
   const inView = useInView(ref, { margin: '-10% 0px' })
-  const query = useTyping(queries, inView)
+  const query = useTyping(t.mocks.queries, inView)
   const [hot, setHot] = useState(0)
 
   useEffect(() => {
@@ -64,17 +67,17 @@ export function TelescopeMock() {
             <span className="font-mono text-slate-100">{query}</span>
             <span className="h-[1.8cqw] w-px animate-pulse bg-sky-400" />
           </div>
-          <span className="rounded-[1cqw] bg-sky-500 px-[1.6cqw] py-[1cqw] font-medium text-white">Exportar</span>
+          <span className="rounded-[1cqw] bg-sky-500 px-[1.6cqw] py-[1cqw] font-medium text-white">{t.mocks.export}</span>
         </div>
 
         <div className="grid min-h-0 flex-1 grid-cols-[1fr_32%] gap-[1.6cqw]">
           <div className="overflow-hidden rounded-[1.2cqw] border border-white/10">
             <div className="grid grid-cols-[1.2fr_1.6fr_1fr_1.1fr_0.8fr] gap-[1cqw] border-b border-white/10 bg-white/5 px-[1.4cqw] py-[1cqw] font-mono text-[1.15cqw] tracking-wide text-slate-400 uppercase">
-              <span>UPC</span>
-              <span>Producto</span>
-              <span>Marca</span>
-              <span>Geo</span>
-              <span className="text-right">$</span>
+              {t.mocks.cols.map((c, i) => (
+                <span key={c} className={i === 4 ? 'text-right' : ''}>
+                  {c}
+                </span>
+              ))}
             </div>
             {rows.map((r, i) => (
               <motion.div
@@ -87,18 +90,18 @@ export function TelescopeMock() {
                 }`}
               >
                 <span className="truncate font-mono text-slate-400">{r[0]}</span>
-                <span className="truncate">{r[1]}</span>
+                <span className="truncate">{l(r[1])}</span>
                 <span className="truncate">{r[2]}</span>
                 <span className="truncate">{r[3]}</span>
-                <span className="text-right font-mono text-sky-300">{r[4]}</span>
+                <span className="text-right font-mono text-sky-300">{millions(r[4], locale)}</span>
               </motion.div>
             ))}
           </div>
 
           <div className="flex min-h-0 flex-col gap-[1.6cqw]">
             <div className="rounded-[1.2cqw] border border-white/10 bg-white/5 p-[1.6cqw]">
-              <p className="text-[1.15cqw] tracking-wide text-slate-400 uppercase">Ventas totales</p>
-              <p className="mt-[0.6cqw] font-display text-[3cqw] font-semibold text-white">$64,4M</p>
+              <p className="text-[1.15cqw] tracking-wide text-slate-400 uppercase">{t.mocks.totalSales}</p>
+              <p className="mt-[0.6cqw] font-display text-[3cqw] font-semibold text-white">${millions(64.4, locale)}</p>
               <div className="mt-[1.2cqw] flex h-[7cqw] items-end gap-[0.8cqw]">
                 {[40, 65, 52, 80, 58, 92, 70, 100].map((h, i) => (
                   <motion.span
@@ -119,8 +122,8 @@ export function TelescopeMock() {
             >
               <FiCheckCircle className="mt-[0.2cqw] shrink-0" />
               <span>
-                <b className="block font-semibold text-emerald-200">Sin duplicados</b>
-                1,2 GB escaneados con DuckDB
+                <b className="block font-semibold text-emerald-200">{t.mocks.noDupes}</b>
+                {t.mocks.scanned}
               </span>
             </motion.div>
           </div>
@@ -136,13 +139,14 @@ const rings = [
   { label: 'Prime', size: 90, duration: 22, color: 'bg-sky-400', count: '48.912' },
 ]
 const lifecycle = [
-  ['ADD', '12 mar', 'bg-emerald-400/15 text-emerald-300'],
-  ['CHANGE', '02 jun', 'bg-amber-400/15 text-amber-300'],
-  ['CHANGE', '19 ago', 'bg-amber-400/15 text-amber-300'],
-  ['HELD', '30 sep', 'bg-rose-400/15 text-rose-300'],
+  ['ADD', 'bg-emerald-400/15 text-emerald-300'],
+  ['CHANGE', 'bg-amber-400/15 text-amber-300'],
+  ['CHANGE', 'bg-amber-400/15 text-amber-300'],
+  ['HELD', 'bg-rose-400/15 text-rose-300'],
 ]
 
 export function KeplerMock() {
+  const { t, l } = useI18n()
   const ref = useRef(null)
   const inView = useInView(ref, { margin: '-10% 0px' })
 
@@ -174,10 +178,10 @@ export function KeplerMock() {
 
         <div className="flex min-h-0 flex-col gap-[1.6cqw]">
           <div className="relative flex-1 overflow-hidden rounded-[1.2cqw] border border-white/10 bg-linear-to-br from-[#f6efe3] to-[#e7d8bf] p-[2cqw] text-[#3b2f20]">
-            <p className="font-display text-[2.6cqw] leading-none font-bold">CAFÉ ANDINO</p>
-            <p className="mt-[0.8cqw] text-[1.3cqw] tracking-wide uppercase">Tostión media · 100% arábica</p>
-            <p className="mt-[2.4cqw] text-[1.3cqw]">Peso neto 500 g</p>
-            <p className="text-[1.3cqw]">Sin azúcar añadida</p>
+            <p className="font-display text-[2.6cqw] leading-none font-bold">{l({ es: 'CAFÉ ANDINO', en: 'ANDEAN COFFEE' })}</p>
+            <p className="mt-[0.8cqw] text-[1.3cqw] tracking-wide uppercase">{l({ es: 'Tostión media · 100% arábica', en: 'Medium roast · 100% arabica' })}</p>
+            <p className="mt-[2.4cqw] text-[1.3cqw]">{l({ es: 'Peso neto 500 g', en: 'Net weight 500 g' })}</p>
+            <p className="text-[1.3cqw]">{l({ es: 'Sin azúcar añadida', en: 'No added sugar' })}</p>
             {[
               ['18%', '9%', '62%', '12%'],
               ['47%', '9%', '48%', '8%'],
@@ -204,7 +208,7 @@ export function KeplerMock() {
             />
           </div>
           <div className="flex items-center gap-[0.8cqw]">
-            {lifecycle.map(([label, date, cls], i) => (
+            {lifecycle.map(([label, cls], i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 8 }}
@@ -213,7 +217,7 @@ export function KeplerMock() {
                 className={`flex-1 rounded-[0.8cqw] px-[1cqw] py-[0.8cqw] ${cls}`}
               >
                 <p className="font-mono text-[1.15cqw] font-medium">{label}</p>
-                <p className="text-[1.1cqw] opacity-70">{date}</p>
+                <p className="text-[1.1cqw] opacity-70">{t.mocks.dates[i]}</p>
               </motion.div>
             ))}
           </div>

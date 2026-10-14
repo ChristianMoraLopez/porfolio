@@ -21,6 +21,7 @@ import ShaderBackground from './ui/ShaderBackground'
 import { useScrollTo } from './providers/SmoothScroll'
 import { gsap, SplitText, useGSAP, prefersReducedMotion } from '../lib/gsap'
 import { profile } from '../data/profile'
+import { useI18n } from '../i18n/I18nProvider'
 
 const orbits = [
   { radius: 24, duration: 26, icons: [SiReact, SiTypescript, SiNextdotjs] },
@@ -98,6 +99,8 @@ function OrbitSystem() {
 
 export default function Hero({ ready }) {
   const root = useRef(null)
+  const { lang, t, l } = useI18n()
+  const crafts = l(profile.crafts)
   const scrollTo = useScrollTo()
   const { scrollY } = useScroll()
   const contentY = useTransform(scrollY, [0, 700], [0, -140])
@@ -113,21 +116,26 @@ export default function Hero({ ready }) {
         .from('.hero-fade', { y: 30, opacity: 0, duration: 1, stagger: 0.08 }, 0.35)
         .from('.hero-orbit', { scale: 0.6, opacity: 0, rotate: -40, duration: 1.8 }, 0.1)
         .from('.hero-sun .logo-trace', { drawSVG: 0, duration: 1.6, ease: 'power2.inOut' }, 0.3)
+    },
+    { scope: root, dependencies: [ready] },
+  )
 
-      // Las frases rotan con efecto "decrypt" (GSAP ScrambleText).
-      const words = profile.crafts
+  // Las frases rotan con efecto "decrypt" (GSAP ScrambleText) y se reinician
+  // en el idioma nuevo; el span lleva key={lang} para que React lo recree.
+  useGSAP(
+    () => {
+      if (!ready || prefersReducedMotion()) return
       const scramble = gsap.timeline({ repeat: -1, delay: 1.6 })
-      words.forEach((word, i) => {
-        const next = words[(i + 1) % words.length]
+      crafts.forEach((_, i) => {
         scramble.to('.hero-craft', {
           duration: 1.1,
-          scrambleText: { text: next, chars: '01<>/{}*#', speed: 0.5, revealDelay: 0.25 },
+          scrambleText: { text: crafts[(i + 1) % crafts.length], chars: '01<>/{}*#', speed: 0.5, revealDelay: 0.25 },
           ease: 'none',
           delay: 2.2,
         })
       })
     },
-    { scope: root, dependencies: [ready] },
+    { scope: root, dependencies: [ready, lang], revertOnUpdate: true },
   )
 
   return (
@@ -146,7 +154,7 @@ export default function Hero({ ready }) {
                 <span className="absolute inline-flex size-full animate-ping-slow rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex size-2 rounded-full bg-emerald-400" />
               </span>
-              Disponible para proyectos
+              {t.hero.available}
             </span>
             <span className="chip">
               <FiMapPin /> {profile.location}
@@ -160,13 +168,14 @@ export default function Hero({ ready }) {
           </h1>
 
           <p className="hero-fade mt-6 font-display text-[clamp(1.3rem,5.6vw,2.4rem)] sm:mt-8 leading-tight font-medium tracking-tight">
-            <span className="text-muted">Construyo </span>
-            <span className="hero-craft text-gradient">{profile.crafts[0]}</span>
+            <span className="text-muted">{t.hero.build} </span>
+            <span key={lang} className="hero-craft text-gradient">
+              {crafts[0]}
+            </span>
           </p>
 
           <p className="hero-fade mt-5 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
-            {profile.role} en Bogotá. Del e-commerce en producción a apps de escritorio con IA local, siempre con
-            obsesión por el detalle y el rendimiento.
+            {l(profile.role)} {t.hero.intro}
           </p>
 
           <div className="hero-fade mt-10 flex flex-wrap items-center gap-3">
@@ -174,11 +183,11 @@ export default function Hero({ ready }) {
               <button
                 type="button"
                 onClick={() => scrollTo('proyectos')}
-                data-cursor="Ver"
+                data-cursor={t.hero.cursorSee}
                 className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-fg px-6 py-3.5 font-medium text-bg sm:px-7 sm:py-4"
               >
                 <span className="absolute inset-0 -translate-x-full bg-linear-to-r from-accent via-accent-2 to-accent-3 transition-transform duration-500 ease-out group-hover:translate-x-0" />
-                <span className="relative">Ver proyectos</span>
+                <span className="relative">{t.hero.seeProjects}</span>
                 <FiArrowDown className="relative transition-transform group-hover:translate-y-0.5" />
               </button>
             </Magnetic>
@@ -189,7 +198,7 @@ export default function Hero({ ready }) {
                 rel="noopener noreferrer"
                 className="group inline-flex items-center gap-2 rounded-full border border-line-strong bg-surface/40 px-6 py-3.5 font-medium backdrop-blur transition-colors hover:border-fg sm:px-7 sm:py-4"
               >
-                Hablemos
+                {t.hero.talk}
                 <FiArrowUpRight className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </a>
             </Magnetic>
@@ -223,7 +232,7 @@ export default function Hero({ ready }) {
         type="button"
         onClick={() => scrollTo('proyectos')}
         className="hero-fade absolute bottom-8 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-xs tracking-[0.3em] text-muted uppercase sm:flex"
-        aria-label="Bajar a proyectos"
+        aria-label={t.hero.scrollLabel}
       >
         <span className="flex h-10 w-6 justify-center rounded-full border border-line-strong p-1.5">
           <motion.span
@@ -232,7 +241,7 @@ export default function Hero({ ready }) {
             transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
           />
         </span>
-        Scroll
+        {t.hero.scroll}
       </button>
     </section>
   )

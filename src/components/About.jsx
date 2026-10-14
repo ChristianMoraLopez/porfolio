@@ -5,6 +5,7 @@ import CountUp from './ui/CountUp'
 import SpotlightCard from './ui/SpotlightCard'
 import { gsap, SplitText, useGSAP, prefersReducedMotion } from '../lib/gsap'
 import { profile, skillGroups, timeline } from '../data/profile'
+import { useI18n } from '../i18n/I18nProvider'
 
 const groupIcons = { layers: FiLayers, server: FiServer, database: FiDatabase, monitor: FiMonitor }
 const kindIcons = { build: FiZap, work: FiBriefcase, study: FiBookOpen }
@@ -33,6 +34,7 @@ const reveal = {
 }
 
 function Timeline() {
+  const { l } = useI18n()
   const ref = useRef(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start 75%', 'end 60%'] })
   const line = useSpring(scrollYProgress, { stiffness: 120, damping: 30 })
@@ -49,7 +51,7 @@ function Timeline() {
           const Icon = kindIcons[item.kind]
           return (
             <motion.li
-              key={item.title}
+              key={item.place}
               {...reveal}
               transition={{ type: 'spring', stiffness: 120, damping: 20, delay: i * 0.04 }}
               className="relative"
@@ -57,10 +59,10 @@ function Timeline() {
               <span className="absolute top-0 -left-10 grid size-8 place-items-center rounded-full border border-line-strong bg-bg text-accent sm:-left-14 sm:size-12">
                 <Icon className="sm:text-lg" />
               </span>
-              <p className="font-mono text-xs text-muted">{item.period}</p>
-              <h4 className="mt-1 font-display text-xl font-semibold tracking-tight sm:text-2xl">{item.title}</h4>
+              <p className="font-mono text-xs text-muted">{l(item.period)}</p>
+              <h4 className="mt-1 font-display text-xl font-semibold tracking-tight sm:text-2xl">{l(item.title)}</h4>
               <p className="text-sm text-accent">{item.place}</p>
-              <p className="mt-2 max-w-2xl leading-relaxed text-muted">{item.detail}</p>
+              <p className="mt-2 max-w-2xl leading-relaxed text-muted">{l(item.detail)}</p>
             </motion.li>
           )
         })}
@@ -70,6 +72,7 @@ function Timeline() {
 }
 
 export default function About() {
+  const { lang, t, l } = useI18n()
   const root = useRef(null)
 
   // El primer párrafo se "enciende" palabra por palabra al hacer scroll.
@@ -93,21 +96,21 @@ export default function About() {
         },
       })
     },
-    { scope: root },
+    { scope: root, dependencies: [lang], revertOnUpdate: true },
   )
 
   return (
     <section ref={root} id="sobre-mi" data-nav="sobre-mi" className="relative py-28 sm:py-36">
       <div className="container-x">
-        <p className="chip mb-8">03 — Sobre mí</p>
-        <p className="about-lead max-w-5xl font-display text-[clamp(1.35rem,5.6vw,3rem)] leading-[1.15] font-medium tracking-tight">
-          {profile.bio[0]}
+        <p className="chip mb-8">{t.about.chip}</p>
+        <p key={lang} className="about-lead max-w-5xl font-display text-[clamp(1.35rem,5.6vw,3rem)] leading-[1.15] font-medium tracking-tight">
+          {l(profile.bio[0])}
         </p>
 
         <div className="mt-16 grid grid-cols-2 gap-3 sm:mt-20 sm:gap-4 md:grid-cols-6 lg:grid-cols-12">
           {profile.stats.map((s, i) => (
             <motion.div
-              key={s.label}
+              key={s.value}
               {...reveal}
               transition={{ type: 'spring', stiffness: 120, damping: 20, delay: i * 0.06 }}
               className="col-span-1 md:col-span-3"
@@ -118,7 +121,7 @@ export default function About() {
                   suffix={s.suffix}
                   className="text-gradient font-display text-4xl font-bold tracking-tight sm:text-6xl"
                 />
-                <p className="mt-2 text-xs text-muted sm:text-sm">{s.label}</p>
+                <p className="mt-2 text-xs text-muted sm:text-sm">{l(s.label)}</p>
               </SpotlightCard>
             </motion.div>
           ))}
@@ -130,9 +133,9 @@ export default function About() {
                   <span className="absolute inline-flex size-full animate-ping-slow rounded-full bg-accent opacity-75" />
                   <span className="relative inline-flex size-2 rounded-full bg-accent" />
                 </span>
-                Ahora mismo
+                {t.about.now}
               </p>
-              <p className="mt-6 text-base leading-relaxed text-fg/90 sm:text-xl">{profile.bio[1]}</p>
+              <p className="mt-6 text-base leading-relaxed text-fg/90 sm:text-xl">{l(profile.bio[1])}</p>
             </SpotlightCard>
           </motion.div>
 
@@ -145,9 +148,9 @@ export default function About() {
                 <p className="font-display text-4xl font-semibold tracking-tight">
                   <BogotaClock />
                 </p>
-                <p className="mt-1 text-sm text-muted">Hora local · UTC−5</p>
+                <p className="mt-1 text-sm text-muted">{t.about.localTime}</p>
               </div>
-              <p className="text-sm text-muted">{profile.languages}</p>
+              <p className="text-sm text-muted">{l(profile.languages)}</p>
             </SpotlightCard>
           </motion.div>
 
@@ -155,7 +158,7 @@ export default function About() {
             const Icon = groupIcons[g.icon]
             return (
               <motion.div
-                key={g.title}
+                key={g.icon}
                 {...reveal}
                 transition={{ type: 'spring', stiffness: 120, damping: 20, delay: i * 0.06 }}
                 className="col-span-2 md:col-span-3 lg:col-span-6"
@@ -165,10 +168,10 @@ export default function About() {
                     <span className="grid size-10 place-items-center rounded-xl bg-accent/10 text-accent">
                       <Icon />
                     </span>
-                    <h3 className="font-display text-xl font-semibold tracking-tight">{g.title}</h3>
+                    <h3 className="font-display text-xl font-semibold tracking-tight">{l(g.title)}</h3>
                   </div>
                   <ul className="mt-5 flex flex-wrap gap-2">
-                    {g.items.map((item) => (
+                    {g.items.map(l).map((item) => (
                       <li
                         key={item}
                         className="rounded-full border border-line bg-bg-soft px-3 py-1.5 text-sm transition-colors hover:border-accent hover:text-accent"
@@ -185,10 +188,8 @@ export default function About() {
 
         <div className="mt-28 grid gap-10 lg:grid-cols-[1fr_2fr]">
           <div className="lg:sticky lg:top-32 lg:self-start">
-            <h3 className="font-display text-4xl font-bold tracking-tight sm:text-5xl">Recorrido</h3>
-            <p className="mt-4 max-w-xs text-muted">
-              Del soporte en inglés en Amazon al backend financiero y a los datos y la automatización en Capgemini.
-            </p>
+            <h3 className="font-display text-4xl font-bold tracking-tight sm:text-5xl">{t.about.journey}</h3>
+            <p className="mt-4 max-w-xs text-muted">{t.about.journeyLead}</p>
           </div>
           <Timeline />
         </div>

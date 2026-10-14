@@ -4,8 +4,10 @@ import Logo from './ui/Logo'
 import Magnetic from './ui/Magnetic'
 import { useScrollTo } from './providers/SmoothScroll'
 import { profile } from '../data/profile'
+import { useI18n } from '../i18n/I18nProvider'
 
 export default function Footer() {
+  const { t } = useI18n()
   const scrollTo = useScrollTo()
 
   return (
@@ -16,16 +18,14 @@ export default function Footer() {
             <Logo className="size-10 text-accent" />
             <span className="font-display text-xl font-semibold tracking-tight">Christian Mora</span>
           </div>
-          <p className="mt-4 max-w-sm text-sm text-muted">
-            Hecho con React, Motion, GSAP, React Spring, Lenis y un shader WebGL propio.
-          </p>
+          <p className="mt-4 max-w-sm text-sm text-muted">{t.footer.made}</p>
         </div>
 
         <div className="flex items-center gap-3">
           {[
             { href: profile.github, Icon: FiGithub, label: 'GitHub' },
             { href: profile.linkedin, Icon: FiLinkedin, label: 'LinkedIn' },
-            { href: `mailto:${profile.email}`, Icon: FiMail, label: 'Correo' },
+            { href: `mailto:${profile.email}`, Icon: FiMail, label: t.footer.email },
           ].map(({ href, Icon, label }) => (
             <a
               key={label}
@@ -42,7 +42,7 @@ export default function Footer() {
             <button
               type="button"
               onClick={() => scrollTo(0)}
-              aria-label="Volver arriba"
+              aria-label={t.footer.top}
               className="group grid size-11 place-items-center rounded-full bg-fg text-bg"
             >
               <FiArrowUp className="transition-transform group-hover:-translate-y-0.5" />
@@ -52,7 +52,7 @@ export default function Footer() {
       </div>
 
       <div className="container-x flex flex-col gap-2 border-t border-line py-6 text-xs text-muted sm:flex-row sm:justify-between">
-        <span>© {new Date().getFullYear()} {profile.fullName}. Todos los derechos reservados.</span>
+        <span>© {new Date().getFullYear()} {profile.fullName}. {t.footer.rights}</span>
         <span>{profile.location}</span>
       </div>
 

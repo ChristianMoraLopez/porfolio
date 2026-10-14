@@ -3,17 +3,15 @@ import { AnimatePresence, motion, useMotionValueEvent, useScroll, useSpring } fr
 import { FiArrowUpRight, FiMenu, FiX } from 'react-icons/fi'
 import Logo from './ui/Logo'
 import ThemeToggle from './ui/ThemeToggle'
+import LanguageToggle from './ui/LanguageToggle'
+import { useI18n } from '../i18n/I18nProvider'
 import { useScrollTo } from './providers/SmoothScroll'
 import { profile } from '../data/profile'
 
-const links = [
-  { id: 'inicio', label: 'Inicio' },
-  { id: 'proyectos', label: 'Proyectos' },
-  { id: 'sobre-mi', label: 'Sobre mí' },
-  { id: 'contacto', label: 'Contacto' },
-]
+const links = ['inicio', 'proyectos', 'sobre-mi', 'contacto']
 
 export default function Navbar({ dark, onToggleTheme }) {
+  const { t } = useI18n()
   const scrollTo = useScrollTo()
   const { scrollY, scrollYProgress } = useScroll()
   const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 30, restDelta: 0.001 })
@@ -70,50 +68,51 @@ export default function Navbar({ dark, onToggleTheme }) {
               : 'border-transparent bg-transparent'
           }`}
         >
-          <button type="button" onClick={() => go('inicio')} className="group flex items-center gap-2.5" aria-label="Ir al inicio">
+          <button type="button" onClick={() => go('inicio')} className="group flex shrink-0 items-center gap-2.5" aria-label={t.nav.home}>
             <Logo className="size-8 text-accent transition-transform duration-700 group-hover:rotate-[360deg]" />
-            <span className="font-display text-[15px] font-semibold tracking-tight">Christian Mora</span>
+            <span className="hidden font-display text-[15px] font-semibold tracking-tight min-[360px]:inline">Christian Mora</span>
           </button>
 
           <ul className="hidden items-center gap-1 md:flex">
-            {links.map((l) => (
-              <li key={l.id}>
+            {links.map((id) => (
+              <li key={id}>
                 <button
                   type="button"
-                  onClick={() => go(l.id)}
-                  className={`relative rounded-full px-4 py-2 text-sm transition-colors ${
-                    active === l.id ? 'text-fg' : 'text-muted hover:text-fg'
+                  onClick={() => go(id)}
+                  className={`relative rounded-full px-4 py-2 text-sm whitespace-nowrap transition-colors ${
+                    active === id ? 'text-fg' : 'text-muted hover:text-fg'
                   }`}
                 >
-                  {active === l.id && (
+                  {active === id && (
                     <motion.span
                       layoutId="nav-pill"
                       className="absolute inset-0 -z-10 rounded-full border border-line bg-surface"
                       transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                     />
                   )}
-                  {l.label}
+                  {t.nav.links[id]}
                 </button>
               </li>
             ))}
           </ul>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <LanguageToggle />
             <ThemeToggle dark={dark} onToggle={onToggleTheme} />
             <a
               href={profile.whatsapp}
               target="_blank"
               rel="noopener noreferrer"
-              className="group hidden items-center gap-1.5 rounded-full bg-fg px-4 py-2.5 text-sm font-medium text-bg transition-transform hover:scale-[1.03] sm:inline-flex"
+              className="group hidden items-center gap-1.5 rounded-full bg-fg px-4 py-2.5 text-sm font-medium whitespace-nowrap text-bg transition-transform hover:scale-[1.03] lg:inline-flex"
             >
-              Hablemos
+              {t.nav.cta}
               <FiArrowUpRight className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </a>
             <button
               type="button"
               onClick={() => setOpen((o) => !o)}
               className="grid size-10 place-items-center rounded-full border border-line bg-surface/60 md:hidden"
-              aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
+              aria-label={open ? t.nav.closeMenu : t.nav.openMenu}
               aria-expanded={open}
             >
               {open ? <FiX /> : <FiMenu />}
@@ -132,11 +131,11 @@ export default function Navbar({ dark, onToggleTheme }) {
             className="noise fixed inset-0 z-40 flex flex-col justify-between bg-bg px-6 pt-28 pb-10 md:hidden"
           >
             <ul className="space-y-2">
-              {links.map((l, i) => (
-                <li key={l.id} className="overflow-hidden">
+              {links.map((id, i) => (
+                <li key={id} className="overflow-hidden">
                   <motion.button
                     type="button"
-                    onClick={() => go(l.id)}
+                    onClick={() => go(id)}
                     initial={{ y: '110%' }}
                     animate={{ y: 0 }}
                     exit={{ y: '110%' }}
@@ -144,7 +143,7 @@ export default function Navbar({ dark, onToggleTheme }) {
                     className="flex items-baseline gap-3 font-display text-5xl font-semibold tracking-tight"
                   >
                     <span className="font-mono text-xs text-muted">0{i + 1}</span>
-                    <span className={active === l.id ? 'text-gradient' : ''}>{l.label}</span>
+                    <span className={active === id ? 'text-gradient' : ''}>{t.nav.links[id]}</span>
                   </motion.button>
                 </li>
               ))}
